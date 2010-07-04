@@ -1,12 +1,5 @@
-/*
- * netflow_record.hpp
- *
- *  Created on: Jun 17, 2010
- *      Author: hamilok
- */
-
-#ifndef NETFLOW_RECORD_HPP_
-#define NETFLOW_RECORD_HPP_
+#ifndef FUNNEL_NETFLOW_RECORD_HPP
+#define FUNNEL_NETFLOW_RECORD_HPP
 
 struct nf_record
 {
@@ -32,4 +25,4 @@ struct nf_record
 	unsigned short pad2; // Unused (zero) bytes
 };
 
-#endif /* NETFLOW_RECORD_HPP_ */
+#endif /* FUNNEL_NETFLOW_RECORD_HPP */

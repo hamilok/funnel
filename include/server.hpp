@@ -1,23 +1,14 @@
-/*
- * server.hpp
- *
- *  Created on: Jun 17, 2010
- *      Author: hamilok
- */
-
-#ifndef SERVER_HPP_
-#define SERVER_HPP_
-
-#include "netflow_header.hpp"
-#include "netflow_record.hpp"
+#ifndef FUNNEL_SERVER_HPP
+#define FUNNEL_SERVER_HPP
 
 class server
 {
 public:
-	server(boost::asio::io_service& io_service, std::vector<boost::asio::ip::address>& alist, short port) :
+	server(boost::asio::io_service& io_service, short port, std::vector<subscriber> networks, std::vector<subscriber> abonents) :
 		io_service_(io_service),
-		addr_list(alist),
-		socket_(io_service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port))
+		socket_(io_service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port),
+        network_list(networks),
+        abonent_list(abonents))
 	{
 		socket_.async_receive_from(
 			boost::asio::buffer(data_, max_length),
@@ -45,14 +36,35 @@ public:
 			{
 				memcpy(&rec, &data_[pos], sizeof(nf_record));
 
-				boost::asio::ip::address addr = boost::asio::ip::address_v4(rec.srcaddr);
+				subscriber src = subscriber(boost::asio::ip::address_v4(rec.srcaddr), 0, 0, 0);
+                subscriber dst = subscriber(boost::asio::ip::address_v4(rec.dstaddr), 0, 0, 0);
 
-				std::vector<boost::asio::ip::address>::iterator itr = lower_bound(addr_list.begin(), addr_list.end(), addr);
+				std::vector<subscriber>::iterator abonent_itr = abonent_list.end();
+                std::vector<subscriber>::iterator network_itr = network_list.end();
 
-				if (itr == addr_list.end())
+                abonent_itr = lower_bound(abonent_list.begin(), abonent_list.end(), src, subscriber_sort_by_address);
+				if (abonent_itr != abonent_list.end())
 				{
-					addr_list.push_back(addr);
+                    (*abonent_itr).add_outgoing(rec.dOctets);
+
+                    network_itr = lower_bound(network_list.begin(), network_list.end(), dst, subscriber_sort_by_address);
+                    if (network_itr != network_list.end())
+                    {
+                        (*abonent_itr).set_direction((*network_itr).get_direction());
+                    }
 				}
+
+                abonent_itr = lower_bound(abonent_list.begin(), abonent_list.end(), dst, subscriber_sort_by_address);
+                if (abonent_itr != abonent_list.end()) 
+                {
+                    (*abonent_itr).add_incoming(rec.dOctets);
+
+                    network_itr = lower_bound(network_list.begin(), network_list.end(), src, subscriber_sort_by_address);
+                    if (network_itr != network_list.end()) 
+                    {
+                        (*abonent_itr).set_direction((*network_itr).get_direction());
+                    }
+                }
 			}
 		}
 
@@ -69,10 +81,11 @@ public:
 	}
 
 private:
-	std::vector<boost::asio::ip::address>& addr_list;
 	boost::asio::io_service& io_service_;
 	boost::asio::ip::udp::socket socket_;
 	boost::asio::ip::udp::endpoint sender_endpoint_;
+    std::vector<subscriber> network_list;
+    std::vector<subscriber> abonent_list;
 	enum
 	{
 		max_length = 65535
@@ -80,4 +93,4 @@ private:
 	char data_[max_length];
 };
 
-#endif /* SERVER_HPP_ */
+#endif /* FUNNEL_SERVER_HPP */

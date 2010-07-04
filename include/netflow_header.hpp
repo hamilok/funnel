@@ -1,12 +1,5 @@
-/*
- * netflow_header.hpp
- *
- *  Created on: Jun 17, 2010
- *      Author: hamilok
- */
-
-#ifndef NETFLOW_HEADER_HPP_
-#define NETFLOW_HEADER_HPP_
+#ifndef FUNNEL_NETFLOW_HEADER_HPP
+#define FUNNEL_NETFLOW_HEADER_HPP
 
 struct nf_header
 {
@@ -21,4 +14,4 @@ struct nf_header
 	unsigned short sampling_interval; // First two bits hold the sampling mode; remaining 14 bits hold value of sampling interval
 };
 
-#endif /* NETFLOW_HEADER_HPP_ */
+#endif /* FUNNEL_NETFLOW_HEADER_HPP */

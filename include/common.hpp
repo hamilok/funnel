@@ -19,7 +19,6 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/variate_generator.hpp>
 
-#include "subscriber.hpp"
 #include "netflow_header.hpp"
 #include "netflow_record.hpp"
 

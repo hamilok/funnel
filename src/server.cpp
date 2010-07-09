@@ -4,7 +4,8 @@
 server::server(short port)
 	:	socket_(io_service_, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port)),
         timer_(io_service_, boost::posix_time::seconds(1)),
-        packets_(0)
+        packets_cnt_(0),
+        packets_size_(0)
 {
     abonent_list.push_back(boost::asio::ip::address_v4::from_string("101.122.123.77"));
     abonent_list.push_back(boost::asio::ip::address_v4::from_string("217.28.41.77"));
@@ -36,7 +37,7 @@ server::server(short port)
     // addresses
     while (std::getline(stream, prefix))
     {
-        uaix_list.push_back(boost::asio::ip::network_v4::from_string(prefix));
+        uaix_list.push_back(network_v4::from_string(prefix));
     }
 
     std::sort(uaix_list.begin(), uaix_list.end());
@@ -79,9 +80,10 @@ void server::stop()
 
 void server::handle_timeout()
 {
-    std::cout << packets_ << " pps" << std::endl;
+    std::cout << "packets: " << packets_cnt_ << ", size: " << (packets_size_ / (1024 * 1024)) << " MB/s" << std::endl;
 
-    packets_ = 0;
+    packets_cnt_ = 0;
+    packets_size_ = 0;
 
     timer_.expires_from_now(boost::posix_time::seconds(1));
     timer_.async_wait(boost::bind(&server::handle_timeout, this));
@@ -91,8 +93,9 @@ void server::handle_receive_from(const boost::system::error_code& error, size_t 
 {
     if (!error && bytes_recvd > 0)
     {
-        packets_++;
-
+        packets_cnt_ += 1;
+        packets_size_ += bytes_recvd;
+/*
         nf_header hdr;
         nf_record rec;
 
@@ -107,7 +110,7 @@ void server::handle_receive_from(const boost::system::error_code& error, size_t 
             boost::asio::ip::address_v4 dst(rec.dstaddr);
 
             std::vector<boost::asio::ip::address_v4>::iterator abonent_itr = abonent_list.end();
-            std::vector<boost::asio::ip::network_v4>::iterator network_itr = uaix_list.end();
+            std::vector<network_v4>::iterator network_itr = uaix_list.end();
 
             abonent_itr = binary_search2(abonent_list.begin(), abonent_list.end(), src);
 
@@ -147,6 +150,7 @@ void server::handle_receive_from(const boost::system::error_code& error, size_t 
                 }
             }
         }
+*/
     }
 
     socket_.async_receive_from(

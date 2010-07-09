@@ -7,10 +7,10 @@
 #include <boost/thread.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "boost/asio/ip/network_v4.hpp"
-
 #include "netflow_header.hpp"
 #include "netflow_record.hpp"
+
+#include "network_v4.hpp"
 
 class server : private boost::noncopyable
 {
@@ -29,14 +29,15 @@ private:
 	boost::asio::ip::udp::socket socket_;
 	boost::asio::ip::udp::endpoint sender_endpoint_;
     std::vector<boost::asio::ip::address_v4> abonent_list;
-    std::vector<boost::asio::ip::network_v4> uaix_list;
+    std::vector<network_v4> uaix_list;
 	enum
 	{
 		max_length = 65535
 	};
 	char data_[max_length];
     boost::asio::deadline_timer timer_;
-    unsigned int packets_;
+    unsigned long packets_cnt_;
+    unsigned long packets_size_;
 };
 
 #endif /* FUNNEL_SERVER_HPP */

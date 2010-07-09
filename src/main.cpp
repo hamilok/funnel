@@ -11,13 +11,10 @@ int main(int argc, char* argv[])
 			return 1;
 		}
 
-		boost::asio::io_service io_service;
-
         std::cout << "Listening..." << std::endl;
 
-		server srv(io_service, std::atoi(argv[1]));
-
-        io_service.run();
+		server srv( std::atoi(argv[1]) );
+        srv.run();
 	}
 	catch (std::exception& e)
 	{

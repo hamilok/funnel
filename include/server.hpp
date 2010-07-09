@@ -4,9 +4,11 @@
 class server
 {
 public:
-	server(boost::asio::io_service& io_service, short port) :
-		io_service_(io_service),
-		socket_(io_service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port))
+	server(boost::asio::io_service& io_service, short port)
+		:	io_service_(io_service),
+			socket_(io_service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port)),
+			timer_(io_service, boost::posix_time::seconds(1)),
+			packets_(0)
 	{
         abonent_list.push_back(boost::asio::ip::address_v4::from_string("101.122.123.77"));
         abonent_list.push_back(boost::asio::ip::address_v4::from_string("217.28.41.77"));
@@ -57,12 +59,26 @@ public:
                 boost::asio::placeholders::bytes_transferred
             )
         );
+
+        timer_.async_wait(boost::bind(&server::handle_timeout, this));
 	}
+
+    void handle_timeout()
+    {
+        std::cout << packets_ << " pps" << std::endl;
+
+        packets_ = 0;
+
+        timer_.expires_from_now(boost::posix_time::seconds(1));
+        timer_.async_wait(boost::bind(&server::handle_timeout, this));
+    }
 
 	void handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd)
 	{
 		if (!error && bytes_recvd > 0)
 		{
+            packets_++;
+
 			nf_header hdr;
 			nf_record rec;
 
@@ -89,7 +105,7 @@ public:
                     // UA-IX
                     if ( network_itr != uaix_list.end() )
                     {
-                        std::cout << "form: ua-ix, to: " << *abonent_itr << std::endl;
+//                        std::cout << "form: ua-ix, to: " << *abonent_itr << std::endl;
                     }
                     else
                     {
@@ -108,7 +124,7 @@ public:
                         // UA-IX
                         if ( network_itr != uaix_list.end() )
                         {
-                            std::cout << "from ua-ix, to: " << *abonent_itr << std::endl;
+//                            std::cout << "from ua-ix, to: " << *abonent_itr << std::endl;
                         }
                         else
                         {
@@ -142,6 +158,8 @@ private:
 		max_length = 65535
 	};
 	char data_[max_length];
+    boost::asio::deadline_timer timer_;
+    unsigned int packets_;
 };
 
 #endif /* FUNNEL_SERVER_HPP */

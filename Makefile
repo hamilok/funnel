@@ -1,5 +1,5 @@
 funnel: main.o server.o
-	g++ -o bin/funnel -I ./include -l boost_system -l boost_thread obj/network_v4.o obj/server.o obj/main.o
+	g++ -o bin/funnel -I ./include -l boost_system -l boost_thread -l boost_program_options obj/network_v4.o obj/server.o obj/main.o
 
 main.o:
 	g++ -o obj/main.o -c src/main.cpp -I ./include

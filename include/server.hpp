@@ -26,6 +26,7 @@ private:
 
 private:
 	boost::asio::io_service io_service_;
+    boost::asio::strand strand_;
 	boost::asio::ip::udp::socket socket_;
 	boost::asio::ip::udp::endpoint sender_endpoint_;
     std::vector<boost::asio::ip::address_v4> abonent_list;
@@ -35,7 +36,10 @@ private:
 		max_length = 65535
 	};
 	char data_[max_length];
+    std::vector<nf_record> records_;
     boost::asio::deadline_timer timer_;
+    std::size_t header_size_;
+    std::size_t record_size_;
     unsigned long packets_cnt_;
     unsigned long packets_size_;
 };

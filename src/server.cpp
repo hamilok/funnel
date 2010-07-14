@@ -2,7 +2,8 @@
 #include "server.hpp"
 
 server::server(short port)
-	:	socket_(io_service_, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port)),
+	:	strand_(io_service_),
+        socket_(io_service_, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port)),
         timer_(io_service_, boost::posix_time::seconds(1)),
         packets_cnt_(0),
         packets_size_(0)
@@ -16,6 +17,8 @@ server::server(short port)
 
     std::sort(abonent_list.begin(), abonent_list.end());
 
+    header_size_ = sizeof(nf_header);
+    record_size_ = sizeof(nf_record);
 
     std::cout << "Loading the address list from www.colocall.net:" << std::endl;
 
@@ -48,15 +51,15 @@ server::server(short port)
     socket_.async_receive_from(
         boost::asio::buffer(data_, max_length),
         sender_endpoint_,
-        boost::bind(
+        strand_.wrap(boost::bind(
             &server::handle_receive_from,
             this,
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred
-        )
+        ))
     );
 
-    timer_.async_wait(boost::bind(&server::handle_timeout, this));
+    timer_.async_wait(strand_.wrap(boost::bind(&server::handle_timeout, this)));
 }
 
 void server::run()
@@ -86,7 +89,7 @@ void server::handle_timeout()
     packets_size_ = 0;
 
     timer_.expires_from_now(boost::posix_time::seconds(1));
-    timer_.async_wait(boost::bind(&server::handle_timeout, this));
+    timer_.async_wait(strand_.wrap(boost::bind(&server::handle_timeout, this)));
 }
 
 void server::handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd)
@@ -95,6 +98,17 @@ void server::handle_receive_from(const boost::system::error_code& error, size_t 
     {
         packets_cnt_ += 1;
         packets_size_ += bytes_recvd;
+
+        nf_header hdr;
+        memcpy(&hdr, data_, header_size_);
+
+        std::size_t pos = header_size_;
+        for (std::size_t i = 0; i < ntohs(hdr.count); i++, pos += record_size_)
+        {
+            nf_record rec;
+            memcpy(&rec, &data_[pos], record_size_);
+            records_.push_back(rec);
+        }
 /*
         nf_header hdr;
         nf_record rec;
@@ -156,11 +170,11 @@ void server::handle_receive_from(const boost::system::error_code& error, size_t 
     socket_.async_receive_from(
         boost::asio::buffer(data_, max_length),
         sender_endpoint_,
-        boost::bind(
+        strand_.wrap(boost::bind(
             &server::handle_receive_from,
             this,
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred
-        )
+        ))
     );
 }

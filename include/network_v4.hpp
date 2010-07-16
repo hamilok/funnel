@@ -2,27 +2,57 @@
 #define FUNNEL_NETWORK_V4_HPP
 
 #include <boost/asio.hpp>
-#include <boost/lexical_cast.hpp>
 
 class network_v4 {
 public:
-    explicit network_v4();
-    explicit network_v4(boost::asio::ip::address_v4 addr, unsigned char cidr);
+    explicit network_v4( unsigned long addr, unsigned char cidr );
 
-    boost::asio::ip::address_v4 min_host() const;
-    boost::asio::ip::address_v4 max_host() const;
+    unsigned long min_host() const;
+    unsigned long max_host() const;
 
-    static network_v4 from_string(const std::string& network);
+    static network_v4 from_string( const std::string& network );
 
-    friend bool operator<(const network_v4& lht, const network_v4& rht);
-    friend bool operator>(const network_v4& lht, const network_v4& rht);
-    friend bool operator==(const network_v4& lht, const network_v4& rht);
-    friend bool operator!=(const network_v4& lht, const network_v4& rht);
+    friend bool operator<( const unsigned long& lht, const network_v4& rht )
+    {
+        return ( lht < rht.min_host() );
+    }
 
-    friend std::ostream& operator<<(std::ostream& out, const network_v4& net);
+    friend bool operator<( const network_v4& lht, const unsigned long& rht )
+    {
+        return ( lht.min_host() > rht );
+    }
+
+    friend bool operator<( const network_v4& lht, const network_v4& rht )
+    {
+        return ( lht.max_host() < rht.min_host() );
+    }
+
+    friend bool operator>( const network_v4& lht, const network_v4& rht )
+    {
+        return ( lht.min_host() > rht.max_host() );
+    }
+
+    friend bool operator==( const network_v4& lht, const network_v4& rht )
+    {
+        return ( lht.min_host() == rht.min_host() && lht.max_host() == rht.max_host() );
+    }
+
+    friend bool operator!=( const network_v4& lht, const network_v4& rht )
+    {
+        return ( lht.min_host() != rht.min_host() || lht.max_host() != rht.max_host() );
+    }
+
+    friend std::ostream& operator<<( std::ostream& out, const network_v4& net )
+    {
+        out << boost::asio::ip::address_v4( net.min_host() );
+        out << " - ";
+        out << boost::asio::ip::address_v4( net.max_host() );
+
+        return out;
+    }
 
 private:
-    boost::asio::ip::address_v4 address;
+    unsigned long address;
     unsigned long netmask;
 };
 

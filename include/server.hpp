@@ -11,37 +11,46 @@
 #include "netflow_record.hpp"
 
 #include "network_v4.hpp"
+#include "statistic.hpp"
 
 class server : private boost::noncopyable
 {
 public:
-	explicit server(short port);
+	explicit server(std::size_t port, std::size_t thread_cnt, std::size_t buffer_size, std::size_t update_int);
 
     void run();
     void stop();
 
 private:
-    void handle_timeout();
-    void handle_receive_from(const boost::system::error_code& error, size_t bytes_recvd);
+    void handle_update();
+    void handle_receive_from(const boost::system::error_code& error, std::size_t bytes_recvd);
 
 private:
-	boost::asio::io_service io_service_;
-    boost::asio::strand strand_;
-	boost::asio::ip::udp::socket socket_;
-	boost::asio::ip::udp::endpoint sender_endpoint_;
-    std::vector<boost::asio::ip::address_v4> abonent_list;
-    std::vector<network_v4> uaix_list;
-	enum
-	{
-		max_length = 65535
-	};
-	char data_[max_length];
-    std::vector<nf_record> records_;
-    boost::asio::deadline_timer timer_;
-    std::size_t header_size_;
-    std::size_t record_size_;
-    unsigned long packets_cnt_;
-    unsigned long packets_size_;
+	boost::asio::io_service io_service;
+	boost::asio::ip::udp::socket socket;
+	boost::asio::ip::udp::endpoint sender_endpoint;
+    boost::asio::deadline_timer timer;
+    boost::mutex mutex;
+
+    std::vector< network_v4 > uaix_list;
+    std::vector< unsigned long > abonent_list;
+    statistic_list_t statistic_list;
+
+
+    enum
+    {
+        max_length = 65535
+    };
+
+    char data[max_length];
+
+    std::size_t header_size;
+    std::size_t record_size;
+
+    std::size_t thread_cnt;
+    std::size_t update_int;
+
+    std::size_t flows_cnt;
 };
 
 #endif /* FUNNEL_SERVER_HPP */

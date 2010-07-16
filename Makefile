@@ -1,16 +1,27 @@
-funnel: main.o server.o
-	g++ -o bin/funnel -I ./include -l boost_system -l boost_thread -l boost_program_options obj/network_v4.o obj/server.o obj/main.o
+BDIR =bin
+SDIR =src
+IDIR =include
 
-main.o:
-	g++ -o obj/main.o -c src/main.cpp -I ./include
-server.o: network_v4.o
-	g++ -o obj/server.o -c src/server.cpp -I ./include
+CC=gcc
+CFLAGS=-I$(IDIR)
 
-network_v4.o:
-	g++ -o obj/network_v4.o -c src/network_v4.cpp -I ./include
+ODIR=obj
 
+LIBS=-lboost_system -lboost_thread -lboost_program_options
 
-.PHONY: clean
+_DEPS = server.hpp network_v4.hpp statistic.hpp
+DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-clean:
-	rm -f bin/funnel obj/main.o obj/server.o obj/network_v4.o
+_OBJ = main.o server.o network_v4.o statistic.o 
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+
+$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
+	g++ -c -o $@ $< $(CFLAGS)
+
+funnel: $(OBJ)
+	g++ -o $(BDIR)/$@ $^ $(CFLAGS) $(LIBS)
+
+#.PHONY: clean
+
+#clean:
+#	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~

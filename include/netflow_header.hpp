@@ -12,6 +12,17 @@ struct nf_header
 	unsigned char engine_type; // Type of flow-switching engine
 	unsigned char engine_id; // Slot number of the flow-switching engine
 	unsigned short sampling_interval; // First two bits hold the sampling mode; remaining 14 bits hold value of sampling interval
+
+
+    unsigned short get_version()
+    {
+        return ntohs(version);
+    }
+
+    unsigned short get_count()
+    {
+        return ntohs(count);
+    }
 };
 
 #endif /* FUNNEL_NETFLOW_HEADER_HPP */

@@ -30,13 +30,24 @@ struct statistic_t
         return ( rht < lht.address );
     }
 
-    friend std::ostream operator<<( std::ostream& out, const statistic_t& stat )
+    friend bool operator<( const statistic_t& lht, const statistic_t& rht )
+    {
+        return ( lht.address < rht.address );
+    }
+
+    friend bool operator>=( const statistic_t& lht, const statistic_t& rht )
+    {
+        return ( lht.address >= rht.address );
+    }
+
+    friend std::ostream& operator<<( std::ostream& out, const statistic_t& stat )
     {
         out << boost::asio::ip::address_v4( stat.address ) << ":" << std::endl;
         out << "direct 0: " << stat.direction[ 0 ].incoming << " / " << stat.direction[ 0 ].outgoing << std::endl;
         out << "direct 1: " << stat.direction[ 1 ].incoming << " / " << stat.direction[ 1 ].outgoing << std::endl;
         out << "direct 2: " << stat.direction[ 2 ].incoming << " / " << stat.direction[ 2 ].outgoing << std::endl;
         out << "direct 3: " << stat.direction[ 3 ].incoming << " / " << stat.direction[ 3 ].outgoing << std::endl;
+        return out;
     }
 };
 

@@ -107,7 +107,6 @@ void server::handle_update()
 
     std::cout << "OK (" << prev_size << "->" << curr_size << ")" << std::endl;
 
-
     for ( std::size_t i = 0; i < statistic_list.size(); i++ )
     {
         std::cout << statistic_list[ i ] << std::endl;
@@ -128,15 +127,15 @@ void server::handle_receive_from( const boost::system::error_code& error, std::s
 
         if ( hdr.get_version() == 5 )
         {
-            flows_cnt += hdr.get_count();
+            //flows_cnt += hdr.get_count();
 
-            std::cout << "Flows: " << flows_cnt << "\r";
-            std::cout.flush();
+            //std::cout << "Flows: " << flows_cnt << "\r";
+            //std::cout.flush();
 
             nf_record* recs = new nf_record[ hdr.get_count() ];
             memcpy( recs, &data[ header_size ], hdr.get_count() * record_size );
 
-/*
+
             std::vector< network_v4 >::iterator network_itr = uaix_list.end();
             std::vector< unsigned long >::iterator abonent_itr = abonent_list.end();
             statistic_list_i statistic_itr = statistic_list.end();
@@ -148,23 +147,20 @@ void server::handle_receive_from( const boost::system::error_code& error, std::s
                 // Abonent
                 if ( abonent_itr != abonent_list.end() )
                 {
-                    statistic_itr = binary_search2( statistic_list.begin(), statistic_list.end(), recs[ i ].srcaddr );
+                    statistic_itr = lower_bound( statistic_list.begin(), statistic_list.end(), recs[ i ].srcaddr );
 
-                    // Not found
                     if ( statistic_itr == statistic_list.end() )
                     {
-                        if ( statistic_itr >= statistic_list.end() )
-                        {
-                            statistic_itr = statistic_list.end();
-                        }
-                        else
-                        {
-                            statistic_itr = statistic_list.begin();
-                        }
+                        statistic_list.insert( statistic_list.end(), statistic_t( recs[ i ].srcaddr ) );
+                        statistic_itr = statistic_list.begin() + statistic_list.size() - 1;
+                    }
+                    else if (statistic_itr < statistic_list.begin() )
+                    {
                         statistic_list.insert( statistic_itr, statistic_t( recs[ i ].srcaddr ) );
                     }
 
-                    network_itr = binary_search2( uaix_list.begin(), uaix_list.end(), recs[i].dstaddr );
+
+                    network_itr = binary_search2( uaix_list.begin(), uaix_list.end(), recs[ i ].dstaddr );
 
                     // UA-IX
                     if ( network_itr != uaix_list.end() )
@@ -187,20 +183,16 @@ void server::handle_receive_from( const boost::system::error_code& error, std::s
                     // Abonent
                     if ( abonent_itr != abonent_list.end() )
                     {
-                        statistic_itr = binary_search2( statistic_list.begin(), statistic_list.end(), recs[ i ].srcaddr );
+                        statistic_itr = lower_bound( statistic_list.begin(), statistic_list.end(), recs[ i ].srcaddr );
 
-                        // Not found
                         if ( statistic_itr == statistic_list.end() )
                         {
-                            if ( statistic_itr >= statistic_list.end() )
-                            {
-                                statistic_itr = statistic_list.end(); 
-                            }
-                            else
-                            {
-                                statistic_itr = statistic_list.begin();
-                            }
-                            statistic_list.insert( statistic_itr, statistic_t( recs[ i ].srcaddr ) );
+                            statistic_list.insert( statistic_list.end(), statistic_t( recs[ i ].srcaddr ) );
+                            statistic_itr = statistic_list.begin() + statistic_list.size() - 1;
+                        }
+                        else if (statistic_itr < statistic_list.begin() )
+                        {
+                            statistic_list.insert( statistic_list.begin(), statistic_t( recs[ i ].srcaddr ) );
                         }
 
                         network_itr = binary_search2( uaix_list.begin(), uaix_list.end(), recs[ i ].srcaddr );
@@ -217,11 +209,11 @@ void server::handle_receive_from( const boost::system::error_code& error, std::s
 //                          std::cout << "from world, to: " << *abonent_itr << std::endl;
                         }
 
-                        ( *statistic_itr ).direction[ direct ].outgoing += recs[ i ].dOctets;
+                        ( *statistic_itr).direction[ direct ].outgoing += recs[ i ].dOctets;
                     }
                 }
             }
-*/
+
 
             delete recs;
         }

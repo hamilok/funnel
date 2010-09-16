@@ -12,37 +12,47 @@ public:
 
     static network_v4 from_string( const std::string& network );
 
-    friend bool operator<( const unsigned long& lht, const network_v4& rht )
+    friend bool operator < ( const network_v4& lht, const unsigned long& rht )
+    {
+        return ( lht.max_host() < rht );
+    }
+
+    friend bool operator < ( const unsigned long& lht, const network_v4& rht )
     {
         return ( lht < rht.min_host() );
     }
 
-    friend bool operator<( const network_v4& lht, const unsigned long& rht )
-    {
-        return ( lht.min_host() > rht );
-    }
-
-    friend bool operator<( const network_v4& lht, const network_v4& rht )
+    friend bool operator < ( const network_v4& lht, const network_v4& rht )
     {
         return ( lht.max_host() < rht.min_host() );
     }
 
-    friend bool operator>( const network_v4& lht, const network_v4& rht )
+    friend bool operator > ( const network_v4& lht, const unsigned long& rht )
+    {
+        return ( lht.min_host() > rht );
+    }
+
+    friend bool operator > ( const unsigned long& lht, const network_v4& rht )
+    {
+        return ( lht > rht.max_host() );
+    }
+
+    friend bool operator > ( const network_v4& lht, const network_v4& rht )
     {
         return ( lht.min_host() > rht.max_host() );
     }
 
-    friend bool operator==( const network_v4& lht, const network_v4& rht )
+    friend bool operator == ( const network_v4& lht, const network_v4& rht )
     {
         return ( lht.min_host() == rht.min_host() && lht.max_host() == rht.max_host() );
     }
 
-    friend bool operator!=( const network_v4& lht, const network_v4& rht )
+    friend bool operator != ( const network_v4& lht, const network_v4& rht )
     {
         return ( lht.min_host() != rht.min_host() || lht.max_host() != rht.max_host() );
     }
 
-    friend std::ostream& operator<<( std::ostream& out, const network_v4& net )
+    friend std::ostream& operator << ( std::ostream& out, const network_v4& net )
     {
         out << boost::asio::ip::address_v4( net.min_host() );
         out << " - ";

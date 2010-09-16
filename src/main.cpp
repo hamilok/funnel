@@ -11,7 +11,7 @@ int main( int argc, char** argv )
     {
         std::string interface;
         std::size_t port = 9500;
-        std::size_t thread_cnt = 2;
+        std::size_t thread_cnt = boost::thread::hardware_concurrency();
         std::size_t buffer_size = 65535;
         std::size_t update_int = 900;
 
@@ -45,7 +45,8 @@ int main( int argc, char** argv )
         boost::program_options::store( boost::program_options::command_line_parser( argc, argv ).options( cmdline_options ).run(), vm );
         boost::program_options::notify( vm );
 
-        if ( vm.count( "help" ) || ( vm.count( "interface" ) == 0 ) ) {
+        if ( vm.count( "help" ) || ( vm.count( "interface" ) == 0 ) )
+        {
             std::cout << visible << std::endl;
             return 1;
         }

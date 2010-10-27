@@ -14,6 +14,15 @@
 # EXTERNAL cache entries
 ########################
 
+//The Boost FILESYSTEM library
+Boost_FILESYSTEM_LIBRARY:FILEPATH=/usr/lib/libboost_filesystem-mt-1_42.so
+
+//Path to a library.
+Boost_FILESYSTEM_LIBRARY_DEBUG:FILEPATH=Boost_FILESYSTEM_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+Boost_FILESYSTEM_LIBRARY_RELEASE:FILEPATH=/usr/lib/libboost_filesystem-mt-1_42.so
+
 //Path to a file.
 Boost_INCLUDE_DIR:PATH=/usr/include/boost-1_42
 
@@ -28,6 +37,15 @@ Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG:FILEPATH=Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG
 
 //Path to a library.
 Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE:FILEPATH=/usr/lib/libboost_program_options-mt-1_42.so
+
+//The Boost REGEX library
+Boost_REGEX_LIBRARY:FILEPATH=/usr/lib/libboost_regex-mt-1_42.so
+
+//Path to a library.
+Boost_REGEX_LIBRARY_DEBUG:FILEPATH=Boost_REGEX_LIBRARY_DEBUG-NOTFOUND
+
+//Path to a library.
+Boost_REGEX_LIBRARY_RELEASE:FILEPATH=/usr/lib/libboost_regex-mt-1_42.so
 
 //The Boost SYSTEM library
 Boost_SYSTEM_LIBRARY:FILEPATH=/usr/lib/libboost_system-mt-1_42.so
@@ -161,6 +179,15 @@ CMAKE_USE_RELATIVE_PATHS:BOOL=OFF
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Path to a library.
+OPENSSL_CRYPTO_LIBRARIES:FILEPATH=/usr/lib/libcrypto.so
+
+//Path to a file.
+OPENSSL_INCLUDE_DIR:PATH=/usr/include
+
+//Path to a library.
+OPENSSL_SSL_LIBRARIES:FILEPATH=/usr/lib/libssl.so
+
 //Value Computed by CMake
 funnel_BINARY_DIR:STATIC=/home/hamilok/projects/funnel
 
@@ -172,6 +199,14 @@ funnel_SOURCE_DIR:STATIC=/home/hamilok/projects/funnel
 # INTERNAL cache entries
 ########################
 
+//Whether the Boost FILESYSTEM library found
+Boost_FILESYSTEM_FOUND:INTERNAL=ON
+//ADVANCED property for variable: Boost_FILESYSTEM_LIBRARY
+Boost_FILESYSTEM_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: Boost_FILESYSTEM_LIBRARY_DEBUG
+Boost_FILESYSTEM_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: Boost_FILESYSTEM_LIBRARY_RELEASE
+Boost_FILESYSTEM_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_INCLUDE_DIR
 Boost_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_LIBRARY_DIRS
@@ -186,6 +221,14 @@ Boost_PROGRAM_OPTIONS_LIBRARY-ADVANCED:INTERNAL=1
 Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE
 Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//Whether the Boost REGEX library found
+Boost_REGEX_FOUND:INTERNAL=ON
+//ADVANCED property for variable: Boost_REGEX_LIBRARY
+Boost_REGEX_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: Boost_REGEX_LIBRARY_DEBUG
+Boost_REGEX_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: Boost_REGEX_LIBRARY_RELEASE
+Boost_REGEX_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //Whether the Boost SYSTEM library found
 Boost_SYSTEM_FOUND:INTERNAL=ON
 //ADVANCED property for variable: Boost_SYSTEM_LIBRARY
@@ -308,4 +351,12 @@ CMAKE_UNAME:INTERNAL=/usr/bin/uname
 CMAKE_USE_RELATIVE_PATHS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Details about finding OpenSSL
+FIND_PACKAGE_MESSAGE_DETAILS_OpenSSL:INTERNAL=[/usr/lib/libssl.so;/usr/lib/libcrypto.so][/usr/include]
+//ADVANCED property for variable: OPENSSL_CRYPTO_LIBRARIES
+OPENSSL_CRYPTO_LIBRARIES-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENSSL_INCLUDE_DIR
+OPENSSL_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENSSL_SSL_LIBRARIES
+OPENSSL_SSL_LIBRARIES-ADVANCED:INTERNAL=1
 

@@ -6,25 +6,61 @@
 
 #IncludeRegexTransform: 
 
-/home/hamilok/projects/funnel/src/main.cpp
-iostream
--
-vector
--
-string
--
-boost/program_options.hpp
--
+/home/hamilok/projects/funnel/src/server.cpp
+common.hpp
+/home/hamilok/projects/funnel/src/common.hpp
 server.hpp
 /home/hamilok/projects/funnel/src/server.hpp
 
-/home/hamilok/projects/funnel/src/network_v4.cpp
+include/abonent.hpp
+statistic.hpp
+include/statistic.hpp
+
+include/buffer_pool.hpp
+boost/noncopyable.hpp
+-
+
+include/checksum.hpp
+vector
+-
+cstring
+-
+fstream
+-
+iostream
+-
+boost/filesystem.hpp
+-
+boost/filesystem/fstream.hpp
+-
+openssl/md5.h
+-
+
+include/common.hpp
+deque
+-
+iostream
+-
+iterator
+-
+algorithm
+-
+boost/thread.hpp
+-
 network_v4.hpp
-/home/hamilok/projects/funnel/src/network_v4.hpp
-boost/lexical_cast.hpp
+include/network_v4.hpp
+statistic.hpp
+include/statistic.hpp
+boost-1_42/boost/concept_check.hpp
 -
 
 include/netflow_header.hpp
+
+include/netflow_packet.hpp
+netflow_header.hpp
+include/netflow_header.hpp
+netflow_record.hpp
+include/netflow_record.hpp
 
 include/netflow_record.hpp
 
@@ -33,11 +69,13 @@ boost/asio.hpp
 -
 
 include/server.hpp
-deque
--
 boost/asio.hpp
 -
 boost/bind.hpp
+-
+boost/filesystem.hpp
+-
+boost/filesystem/fstream.hpp
 -
 boost/noncopyable.hpp
 -
@@ -45,16 +83,22 @@ boost/thread.hpp
 -
 boost/lexical_cast.hpp
 -
-netflow_header.hpp
-include/netflow_header.hpp
-netflow_record.hpp
-include/netflow_record.hpp
-network_v4.hpp
-include/network_v4.hpp
-statistic.hpp
-include/statistic.hpp
+checksum.hpp
+include/checksum.hpp
+common.hpp
+include/common.hpp
+netflow_packet.hpp
+include/netflow_packet.hpp
+buffer_pool.hpp
+include/buffer_pool.hpp
+zone.hpp
+include/zone.hpp
+abonent.hpp
+include/abonent.hpp
+boost-1_42/boost/concept_check.hpp
+-
 
 include/statistic.hpp
-boost/asio.hpp
--
+
+include/zone.hpp
 

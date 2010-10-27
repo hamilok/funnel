@@ -111,6 +111,30 @@ funnel/fast:
 	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/build
 .PHONY : funnel/fast
 
+src/checksum.o: src/checksum.cpp.o
+.PHONY : src/checksum.o
+
+# target to build an object file
+src/checksum.cpp.o:
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/checksum.cpp.o
+.PHONY : src/checksum.cpp.o
+
+src/checksum.i: src/checksum.cpp.i
+.PHONY : src/checksum.i
+
+# target to preprocess a source file
+src/checksum.cpp.i:
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/checksum.cpp.i
+.PHONY : src/checksum.cpp.i
+
+src/checksum.s: src/checksum.cpp.s
+.PHONY : src/checksum.s
+
+# target to generate assembly for a file
+src/checksum.cpp.s:
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/checksum.cpp.s
+.PHONY : src/checksum.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -192,6 +216,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... funnel"
 	@echo "... rebuild_cache"
+	@echo "... src/checksum.o"
+	@echo "... src/checksum.i"
+	@echo "... src/checksum.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

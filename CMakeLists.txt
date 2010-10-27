@@ -10,15 +10,11 @@ CONFIGURE_FILE (
     "${CMAKE_SOURCE_DIR}/include/config.hpp"
 )
 
-FIND_PACKAGE (Boost 1.42.0 REQUIRED COMPONENTS program_options system thread)
-IF (Boost_FOUND)
-#    INCLUDE_DIRECTORIES (${Boost_INCLUDE_DIRS})
-#    LINK_DIRECTORIES (${Boost_LIBRARY_DIRS})
-#    ADD_DEFINITIONS (${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
-ENDIF (Boost_FOUND)
+FIND_PACKAGE (Boost 1.42.0 REQUIRED COMPONENTS program_options regex system filesystem thread)
+FIND_PACKAGE (OpenSSL REQUIRED)
 
 INCLUDE_DIRECTORIES ("${CMAKE_SOURCE_DIR}/include")
 
-ADD_EXECUTABLE (funnel src/main.cpp src/server.cpp src/network_v4.cpp)
+ADD_EXECUTABLE (funnel src/main.cpp src/server.cpp src/checksum.cpp src/network_v4.cpp)
 
-TARGET_LINK_LIBRARIES (funnel ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES (funnel ${Boost_LIBRARIES} ${OPENSSL_CRYPTO_LIBRARIES})

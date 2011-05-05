@@ -70,7 +70,7 @@ CMAKE_AR:FILEPATH=/usr/bin/ar
 
 //Choose the type of build, options are: None(CMAKE_CXX_FLAGS or
 // CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.
-CMAKE_BUILD_TYPE:STRING=
+CMAKE_BUILD_TYPE:STRING=Release
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -185,6 +185,9 @@ OPENSSL_CRYPTO_LIBRARIES:FILEPATH=/usr/lib/libcrypto.so
 //Path to a file.
 OPENSSL_INCLUDE_DIR:PATH=/usr/include
 
+//Path to a file.
+OPENSSL_ROOT_DIR:PATH=/usr
+
 //Path to a library.
 OPENSSL_SSL_LIBRARIES:FILEPATH=/usr/lib/libssl.so
 
@@ -260,7 +263,7 @@ CMAKE_CACHE_MAJOR_VERSION:INTERNAL=2
 //Minor version of cmake used to create the current loaded cache
 CMAKE_CACHE_MINOR_VERSION:INTERNAL=8
 //Patch version of cmake used to create the current loaded cache
-CMAKE_CACHE_PATCH_VERSION:INTERNAL=1
+CMAKE_CACHE_PATCH_VERSION:INTERNAL=4
 //ADVANCED property for variable: CMAKE_COLOR_MAKEFILE
 CMAKE_COLOR_MAKEFILE-ADVANCED:INTERNAL=1
 //Path to CMake executable.
@@ -352,11 +355,13 @@ CMAKE_USE_RELATIVE_PATHS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding OpenSSL
-FIND_PACKAGE_MESSAGE_DETAILS_OpenSSL:INTERNAL=[/usr/lib/libssl.so;/usr/lib/libcrypto.so][/usr/include]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenSSL:INTERNAL=[/usr/lib/libssl.so;/usr/lib/libcrypto.so][/usr/include][v()]
 //ADVANCED property for variable: OPENSSL_CRYPTO_LIBRARIES
 OPENSSL_CRYPTO_LIBRARIES-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENSSL_INCLUDE_DIR
 OPENSSL_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OPENSSL_ROOT_DIR
+OPENSSL_ROOT_DIR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OPENSSL_SSL_LIBRARIES
 OPENSSL_SSL_LIBRARIES-ADVANCED:INTERNAL=1
 

@@ -23,79 +23,79 @@
 class server : private boost::noncopyable
 {
 public:
-    explicit server ( const std::string& address, std::size_t port, std::size_t thread_cnt, std::size_t buffer_size, std::size_t update_int );
+  explicit server ( const std::string& address, std::size_t port, std::size_t thread_cnt, std::size_t buffer_size, std::size_t update_int );
 
-    void run ();
-    void wait ();
-    void stop ();
+  void run ();
+  void wait ();
+  void stop ();
 
-    void list_zone ();
-    void clear_zone ();
+  void list_zone ();
+  void clear_zone ();
 
-    void list_abonent ();
-    void clear_abonent ();
+  void list_abonent ();
+  void clear_abonent ();
 
-    void statistic_dump();
-
-private:
-    void handle_process ();
-
-    void handle_update_client ();
-    void handle_update_network ();
-    void handle_update_stat ();
-
-    void handle_receive_from ( const boost::system::error_code& error, std::size_t bytes_recvd );
+  void statistic_dump();
 
 private:
-    boost::asio::io_service io_service;
-    boost::asio::ip::udp::socket socket;
-    boost::asio::ip::udp::endpoint sender_endpoint;
-    boost::mutex mutex;
-    boost::mutex mutex2;
+  void handle_process ();
 
-    /**
-     * Client
-     */
-    boost::filesystem::path client_file;
-    std::time_t client_timestamp;
-    unsigned char client_checksum[MD5_DIGEST_LENGTH];
-    std::vector< abonent > client_list;
-    boost::asio::deadline_timer client_timer;
+  void handle_update_client ();
+  void handle_update_network ();
+  void handle_update_stat ();
 
-    /**
-     * Network
-     */
-    boost::filesystem::path network_file;
-    std::time_t network_timestamp;
-    unsigned char network_checksum[MD5_DIGEST_LENGTH];
-    std::vector< zone > network_list;
-    boost::asio::deadline_timer network_timer;
+  void handle_receive_from ( const boost::system::error_code& error, std::size_t bytes_recvd );
 
-    deque2<nf_packet> packets;
+private:
+  boost::asio::io_service io_service;
+  boost::asio::ip::udp::socket socket;
+  boost::asio::ip::udp::endpoint sender_endpoint;
+  boost::mutex mutex;
+  boost::mutex mutex2;
 
-    bool running;
-    std::vector < boost::shared_ptr < boost::thread > > threads;
+  /**
+   * Client
+   */
+  boost::filesystem::path client_file;
+  std::time_t client_timestamp;
+  unsigned char client_checksum[MD5_DIGEST_LENGTH];
+  std::vector< abonent > client_list;
+  boost::asio::deadline_timer client_timer;
 
-    enum
-    {
-        max_length = 65535
-    };
+  /**
+   * Network
+   */
+  boost::filesystem::path network_file;
+  std::time_t network_timestamp;
+  unsigned char network_checksum[MD5_DIGEST_LENGTH];
+  std::vector< zone > network_list;
+  boost::asio::deadline_timer network_timer;
 
-    union
-    {
-        nf_packet packet;
-        char data[max_length];
-    };
+  deque2<nf_packet> packets;
 
-    buffer_pool < nf_packet > buff_pool;
+  bool running;
+  std::vector < boost::shared_ptr < boost::thread > > threads;
 
-    std::size_t buffer_size;
+  enum
+  {
+    max_length = 65535
+  };
 
-    std::size_t thread_cnt;
-    std::size_t update_int;
+  union
+  {
+    nf_packet packet;
+    char data[max_length];
+  };
 
-    std::size_t flows_cnt;
-    std::size_t bytes_cnt;
+  buffer_pool < nf_packet > buff_pool;
+
+  std::size_t buffer_size;
+
+  std::size_t thread_cnt;
+  std::size_t update_int;
+
+  std::size_t flows_cnt;
+  std::size_t bytes_cnt;
 };
 
 #endif /* FUNNEL_SERVER_HPP */

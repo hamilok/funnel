@@ -6,8 +6,8 @@
 
 struct nf_packet
 {
-    nf_header hdr;
-    nf_record recs[30];
+  nf_header hdr;
+  nf_record recs[30];
 };
 
 #endif /* FUNNEL_NETFLOW_PACKET_HPP */

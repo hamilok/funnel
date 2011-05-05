@@ -6,6 +6,24 @@
 
 #IncludeRegexTransform: 
 
+/home/hamilok/projects/funnel/src/main.cpp
+iostream
+-
+fstream
+-
+iomanip
+-
+vector
+-
+string
+-
+boost/program_options.hpp
+-
+config.hpp
+/home/hamilok/projects/funnel/src/config.hpp
+server.hpp
+/home/hamilok/projects/funnel/src/server.hpp
+
 /home/hamilok/projects/funnel/src/server.cpp
 common.hpp
 /home/hamilok/projects/funnel/src/common.hpp
@@ -53,6 +71,8 @@ statistic.hpp
 include/statistic.hpp
 boost-1_42/boost/concept_check.hpp
 -
+
+include/config.hpp
 
 include/netflow_header.hpp
 

@@ -111,6 +111,30 @@ funnel/fast:
 	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/build
 .PHONY : funnel/fast
 
+src/abonent_manager.o: src/abonent_manager.cpp.o
+.PHONY : src/abonent_manager.o
+
+# target to build an object file
+src/abonent_manager.cpp.o:
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/abonent_manager.cpp.o
+.PHONY : src/abonent_manager.cpp.o
+
+src/abonent_manager.i: src/abonent_manager.cpp.i
+.PHONY : src/abonent_manager.i
+
+# target to preprocess a source file
+src/abonent_manager.cpp.i:
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/abonent_manager.cpp.i
+.PHONY : src/abonent_manager.cpp.i
+
+src/abonent_manager.s: src/abonent_manager.cpp.s
+.PHONY : src/abonent_manager.s
+
+# target to generate assembly for a file
+src/abonent_manager.cpp.s:
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/abonent_manager.cpp.s
+.PHONY : src/abonent_manager.cpp.s
+
 src/checksum.o: src/checksum.cpp.o
 .PHONY : src/checksum.o
 
@@ -240,6 +264,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... funnel"
 	@echo "... rebuild_cache"
+	@echo "... src/abonent_manager.o"
+	@echo "... src/abonent_manager.i"
+	@echo "... src/abonent_manager.s"
 	@echo "... src/checksum.o"
 	@echo "... src/checksum.i"
 	@echo "... src/checksum.s"

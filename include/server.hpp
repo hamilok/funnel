@@ -35,7 +35,7 @@
 #include "buffer_pool.hpp"
 
 #include "zone_manager.hpp"
-#include "abonent.hpp"
+#include "abonent_manager.hpp"
 
 #include <boost-1_42/boost/concept_check.hpp>
 
@@ -52,17 +52,18 @@ public:
   void list_zones();
   void clear_zones();
 
-  void list_abonent();
-  void clear_abonent();
+  void load_abonents(const std::string& filename);
+  void list_abonents();
+  void clear_abonents();
 
   void statistic_dump();
 
 private:
   void handle_process();
 
-  void handle_update_client();
-  void handle_update_zones();
   void handle_update_stat();
+  void handle_update_zones();
+  void handle_update_abonents();
 
   void start_receive();
   void handle_receive(const boost::system::error_code& error, std::size_t bytes_recvd);
@@ -71,23 +72,18 @@ private:
   boost::asio::io_service io_service;
   boost::asio::ip::udp::socket socket;
   boost::asio::ip::udp::endpoint sender_endpoint;
-  boost::mutex mutex;
-  boost::mutex mutex2;
 
   /**
-   * Client
-   */
-  boost::filesystem::path client_file;
-  std::time_t client_timestamp;
-  unsigned char client_checksum[MD5_DIGEST_LENGTH];
-  std::vector< abonent > client_list;
-  boost::asio::deadline_timer client_timer;
-
-  /**
-   * Network
+   * Zone
    */
   zone_manager zone_mgr;
   boost::asio::deadline_timer zone_timer;
+
+  /**
+   * Abonent
+   */
+  abonent_manager abonent_mgr;
+  boost::asio::deadline_timer abonent_timer;
 
   deque2<nf_packet> packets;
 

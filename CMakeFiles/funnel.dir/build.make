@@ -118,9 +118,32 @@ CMakeFiles/funnel.dir/src/zone_manager.cpp.o.provides: CMakeFiles/funnel.dir/src
 
 CMakeFiles/funnel.dir/src/zone_manager.cpp.o.provides.build: CMakeFiles/funnel.dir/src/zone_manager.cpp.o
 
+CMakeFiles/funnel.dir/src/abonent_manager.cpp.o: CMakeFiles/funnel.dir/flags.make
+CMakeFiles/funnel.dir/src/abonent_manager.cpp.o: src/abonent_manager.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hamilok/projects/funnel/CMakeFiles $(CMAKE_PROGRESS_4)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/funnel.dir/src/abonent_manager.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/funnel.dir/src/abonent_manager.cpp.o -c /home/hamilok/projects/funnel/src/abonent_manager.cpp
+
+CMakeFiles/funnel.dir/src/abonent_manager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/funnel.dir/src/abonent_manager.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/hamilok/projects/funnel/src/abonent_manager.cpp > CMakeFiles/funnel.dir/src/abonent_manager.cpp.i
+
+CMakeFiles/funnel.dir/src/abonent_manager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/funnel.dir/src/abonent_manager.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/hamilok/projects/funnel/src/abonent_manager.cpp -o CMakeFiles/funnel.dir/src/abonent_manager.cpp.s
+
+CMakeFiles/funnel.dir/src/abonent_manager.cpp.o.requires:
+.PHONY : CMakeFiles/funnel.dir/src/abonent_manager.cpp.o.requires
+
+CMakeFiles/funnel.dir/src/abonent_manager.cpp.o.provides: CMakeFiles/funnel.dir/src/abonent_manager.cpp.o.requires
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/abonent_manager.cpp.o.provides.build
+.PHONY : CMakeFiles/funnel.dir/src/abonent_manager.cpp.o.provides
+
+CMakeFiles/funnel.dir/src/abonent_manager.cpp.o.provides.build: CMakeFiles/funnel.dir/src/abonent_manager.cpp.o
+
 CMakeFiles/funnel.dir/src/checksum.cpp.o: CMakeFiles/funnel.dir/flags.make
 CMakeFiles/funnel.dir/src/checksum.cpp.o: src/checksum.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hamilok/projects/funnel/CMakeFiles $(CMAKE_PROGRESS_4)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hamilok/projects/funnel/CMakeFiles $(CMAKE_PROGRESS_5)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/funnel.dir/src/checksum.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/funnel.dir/src/checksum.cpp.o -c /home/hamilok/projects/funnel/src/checksum.cpp
 
@@ -143,7 +166,7 @@ CMakeFiles/funnel.dir/src/checksum.cpp.o.provides.build: CMakeFiles/funnel.dir/s
 
 CMakeFiles/funnel.dir/src/network_v4.cpp.o: CMakeFiles/funnel.dir/flags.make
 CMakeFiles/funnel.dir/src/network_v4.cpp.o: src/network_v4.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/hamilok/projects/funnel/CMakeFiles $(CMAKE_PROGRESS_5)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/hamilok/projects/funnel/CMakeFiles $(CMAKE_PROGRESS_6)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/funnel.dir/src/network_v4.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/funnel.dir/src/network_v4.cpp.o -c /home/hamilok/projects/funnel/src/network_v4.cpp
 
@@ -169,6 +192,7 @@ funnel_OBJECTS = \
 "CMakeFiles/funnel.dir/src/main.cpp.o" \
 "CMakeFiles/funnel.dir/src/server.cpp.o" \
 "CMakeFiles/funnel.dir/src/zone_manager.cpp.o" \
+"CMakeFiles/funnel.dir/src/abonent_manager.cpp.o" \
 "CMakeFiles/funnel.dir/src/checksum.cpp.o" \
 "CMakeFiles/funnel.dir/src/network_v4.cpp.o"
 
@@ -178,6 +202,7 @@ funnel_EXTERNAL_OBJECTS =
 funnel: CMakeFiles/funnel.dir/src/main.cpp.o
 funnel: CMakeFiles/funnel.dir/src/server.cpp.o
 funnel: CMakeFiles/funnel.dir/src/zone_manager.cpp.o
+funnel: CMakeFiles/funnel.dir/src/abonent_manager.cpp.o
 funnel: CMakeFiles/funnel.dir/src/checksum.cpp.o
 funnel: CMakeFiles/funnel.dir/src/network_v4.cpp.o
 funnel: /usr/lib/libboost_program_options-mt-1_42.so
@@ -198,6 +223,7 @@ CMakeFiles/funnel.dir/build: funnel
 CMakeFiles/funnel.dir/requires: CMakeFiles/funnel.dir/src/main.cpp.o.requires
 CMakeFiles/funnel.dir/requires: CMakeFiles/funnel.dir/src/server.cpp.o.requires
 CMakeFiles/funnel.dir/requires: CMakeFiles/funnel.dir/src/zone_manager.cpp.o.requires
+CMakeFiles/funnel.dir/requires: CMakeFiles/funnel.dir/src/abonent_manager.cpp.o.requires
 CMakeFiles/funnel.dir/requires: CMakeFiles/funnel.dir/src/checksum.cpp.o.requires
 CMakeFiles/funnel.dir/requires: CMakeFiles/funnel.dir/src/network_v4.cpp.o.requires
 .PHONY : CMakeFiles/funnel.dir/requires

@@ -22,15 +22,14 @@
 
 server::server(const std::string& address, std::size_t port, std::size_t thread_cnt, std::size_t buffer_size, std::size_t update_int)
   :  socket(io_service, boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(address), port)),
-     client_timer(io_service, boost::posix_time::seconds(update_int)),
      zone_timer(io_service, boost::posix_time::seconds(update_int)),
+     abonent_timer(io_service, boost::posix_time::seconds(update_int)),
      thread_cnt(thread_cnt),
      update_int(update_int),
      buffer_size(buffer_size),
      flows_cnt(0),
      bytes_cnt(0),
      running (true),
-     client_file("./clients.dat"),
      buff_pool(thread_cnt)
 {
   /// Set receive buffer size for socket
@@ -47,8 +46,8 @@ server::server(const std::string& address, std::size_t port, std::size_t thread_
   // Start
   start_receive();
 
-  client_timer.async_wait(boost::bind(&server::handle_update_client, this));
   zone_timer.async_wait(boost::bind(&server::handle_update_zones, this));
+  abonent_timer.async_wait(boost::bind(&server::handle_update_abonents, this));
 }
 
 void server::run()
@@ -102,90 +101,49 @@ void server::clear_zones()
   std::cout << "Zones cleared" << std::endl;
 }
 
-void server::list_abonent ()
+void server::load_abonents(const std::string& filename)
 {
-    boost::mutex::scoped_lock lock( mutex );
-
-    for ( std::size_t i = 0; i < client_list.size(); i++ )
-        std::cout << client_list[i] << std::endl;
-    std::cout << "total count: " << client_list.size() << std::endl;
+  std::cout << "Loading abonents from \"" << filename << "\": ";
+  
+  if (abonent_mgr.load(filename))
+    std::cout << "OK";
+  else
+    std::cout << "Failed";
+  
+  std::cout << std::endl;
+  
 }
 
-void server::clear_abonent ()
+void server::list_abonents()
 {
-    boost::mutex::scoped_lock lock( mutex );
-
-    client_list.clear();
+  abonent_mgr.print();
 }
 
-void server::statistic_dump ()
+void server::clear_abonents()
 {
-    boost::mutex::scoped_lock lock( mutex );
-
-    std::ofstream file ( "statistic_dump.bin", std::ios::out | std::ios::binary );
-    if ( file.is_open() )
-    {
-        for ( std::size_t i = 0; i < client_list.size(); i++ )
-            file << client_list[i];
-    }
-    file.close();
+  abonent_mgr.clear();
+  std::cout << "Abonents cleared" << std::endl;
 }
 
-void server::handle_update_client ()
+void server::statistic_dump()
 {
-    try
-    {
-        std::size_t filesize = boost::filesystem::file_size ( client_file );
-        std::time_t current_timestamp = boost::filesystem::last_write_time ( client_file );
+/*
+  std::ofstream file("statistic_dump.bin", std::ios::out | std::ios::binary);
+  if (file.is_open())
+  {
+    for (std::size_t i = 0; i < client_list.size(); i++)
+      file << client_list[i];
+  }
+  file.close();
+*/
+}
 
-        // Calc checksum only modified and not empty file
-        if ( current_timestamp > client_timestamp && filesize > 0 )
-        {
-            client_timestamp = current_timestamp;
+void server::handle_update_abonents()
+{
+  abonent_mgr.update();
 
-            checksum_md5 md5;
-            if ( !md5.compare_file ( client_file, client_checksum ) )
-            {
-                boost::filesystem::ifstream file ( client_file, std::ios::binary );
-
-                if ( file.is_open () )
-                {
-                    boost::mutex::scoped_lock lock( mutex );
-
-                    client_list.clear ();
-
-                    std::string record;
-                    boost::smatch result;
-
-                    while ( !std::getline ( file, record ) .eof () )
-                    {
-                        if ( !boost::regex_match ( record, result, boost::regex ( "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})" ) ) )
-                            continue;
-
-                        client_list.push_back (
-                            abonent (
-                                boost::asio::ip::address_v4::from_string ( result [ 1 ] ).to_ulong (),
-                                "EE:EE:EE:EE:EE:EE"
-                            )
-                        );
-                    }
-                    std::sort ( client_list.begin (), client_list.end () );
-                }
-                file.close ();
-            }
-        }
-    }
-    catch ( boost::filesystem::filesystem_error& e )
-    {
-        std::cerr << e.what () << std::endl;
-    }
-    catch ( std::exception& e )
-    {
-        std::cerr << e.what () << std::endl;
-    }
-
-    client_timer.expires_from_now ( boost::posix_time::seconds ( update_int ) );
-    client_timer.async_wait ( boost::bind ( &server::handle_update_client, this ) );
+  abonent_timer.expires_from_now ( boost::posix_time::seconds ( update_int ) );
+  abonent_timer.async_wait ( boost::bind ( &server::handle_update_abonents, this ) );
 }
 
 void server::handle_update_zones()
@@ -226,15 +184,12 @@ void server::handle_receive ( const boost::system::error_code& error, std::size_
     return start_receive();
   }
     
-  // For client & network
-  boost::mutex::scoped_lock lock ( mutex );
-
   std::cout << boost::this_thread::get_id() << ": process" << std::endl;
 
   unsigned char zone_code = 0;
   std::vector< zone >::iterator network_itr;
   std::vector< abonent >::iterator client_itr;
-
+/*
   // Each per flow
   for ( std::size_t i = 0; i < packet.hdr.get_count (); i++ )
   {
@@ -245,12 +200,12 @@ void server::handle_receive ( const boost::system::error_code& error, std::size_
 
     if ( client_itr != client_list.end () )
     {
-//    network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].dstaddr );
+      network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].dstaddr );
 
-//    if ( network_itr != network_list.end () )
-//    {
-//      zone_code = ( *network_itr ).get_code();
-//    }
+      if ( network_itr != network_list.end () )
+      {
+        zone_code = ( *network_itr ).get_code();
+      }
 
       ( *client_itr ).dir[ zone_code ].outgoing += packet.recs[ i ].dOctets;
     }
@@ -260,17 +215,17 @@ void server::handle_receive ( const boost::system::error_code& error, std::size_
 
       if ( client_itr != client_list.end () )
       {
-//      network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].srcaddr );
+        network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].srcaddr );
 
-//      if ( network_itr != network_list.end () )
-//      {
-//        zone_code = ( *network_itr ).get_code ();
-//      }
+        if ( network_itr != network_list.end () )
+        {
+          zone_code = ( *network_itr ).get_code ();
+        }
 
         ( *client_itr ).dir[ zone_code ].incoming += packet.recs[ i ].dOctets;
       }
     }
   }
-
+*/
   start_receive();
 }

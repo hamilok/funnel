@@ -17,32 +17,21 @@
 */
 
 
-#include "common.hpp"
-#include "zone_manager.hpp"
+#include "abonent_manager.hpp"
 
-zone_manager::zone_manager() : filename("./misc/networks.dat")
+abonent_manager::abonent_manager() : filename("./misc/abonents.dat")
 {
-
 }
 
-zone_manager::~zone_manager()
+abonent_manager::~abonent_manager()
 {
   clear();
 }
 
-void zone_manager::add(const zone& item)
-{
-  items.push_back(item);
-}
-
-void zone_manager::add(unsigned long address, unsigned int cidr, unsigned char code)
-{
-  items.push_back(zone(address, cidr, code));
-}
-
-bool zone_manager::load(const std::string& n_filename)
+bool abonent_manager::load(const std::string& n_filename)
 {
   boost::filesystem::ifstream file(n_filename, std::ios::binary);
+
   if (!file.is_open())
   {
     return false;
@@ -54,60 +43,59 @@ bool zone_manager::load(const std::string& n_filename)
   boost::smatch result;
   while (!std::getline(file, record).eof())
   {
-    if (!boost::regex_match(record, result, boost::regex("([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})/([0-9]{2})")))
+    if (!boost::regex_match(record, result, boost::regex("([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})")))
       continue;
 
-    add(
-      boost::asio::ip::address_v4::from_string(result[1]).to_ulong(),
-      atoi(result[2].str().c_str()),
-      1
+    items.push_back(
+      abonent(
+        boost::asio::ip::address_v4::from_string(result[1]).to_ulong(),
+        "EE:EE:EE:EE:EE:EE"
+      )
     );
   }
-      
+
+  std::sort(items.begin(), items.end());
+
   file.close();
-  
-  return true;
 }
 
-void zone_manager::print()
+void abonent_manager::print()
 {
   std::size_t cnt = items.size();
   
-  std::cout << "+------------+-----------------+-----------------+" << std::endl;
-  std::cout << "| Identifier |     Minimal     |     Maximal     |" << std::endl;
-  std::cout << "+------------+-----------------+-----------------+" << std::endl;
+  std::cout << "+-------------------+-----------------+" << std::endl;
+  std::cout << "|    MAC Address    |   IP Address    |" << std::endl;
+  std::cout << "+-------------------+-----------------+" << std::endl;
   
   if (0 == cnt)
   {
-    std::cout << "|                   Empty list                   |" << std::endl;
+    std::cout << "|             Empty list              |" << std::endl;
   }
   else
   {
     for (std::size_t i = 0; i < cnt; i++)
     {
-      std::cout << "| " << std::setw(10) << (int) items[i].get_code() << " ";
-      std::cout << "| " << std::setw(15) << boost::asio::ip::address_v4(htonl(items[i].get_min())).to_string() << " ";
-      std::cout << "| " << std::setw(15) << boost::asio::ip::address_v4(htonl(items[i].get_max())).to_string() << " ";
-      std::cout << "|"  << std::endl;
+      std::cout << "| " << std::setw(17) << items[i].get_mac() << " ";
+      std::cout << "| " << std::setw(15) << boost::asio::ip::address_v4(items[i].get_ip()).to_string() << " ";
+      std::cout << "|" << std::endl;
     }
   }
   
-  std::cout << "+------------+-----------------+-----------------+" << std::endl;
+  std::cout << "+-------------------+-----------------+" << std::endl;
   std::cout << "Total count: " << cnt << std::endl;
 }
 
-void zone_manager::clear()
+void abonent_manager::clear()
 {
   items.clear();
 }
 
-bool zone_manager::update()
+bool abonent_manager::update()
 {
   try
   {
     if (0 == boost::filesystem::file_size(filename))
     {
-      std::cout << "File is empty" << std::endl;
       return false;
     }
 
@@ -120,13 +108,10 @@ bool zone_manager::update()
       checksum_md5 md5;
       if (md5.compare_file(filename, checksum))
       {
-        std::cout << "No updates" << std::endl;
         return false;
       }
       
       load(filename.string().c_str());
-
-      std::sort(items.begin(), items.end());
     }
   }
   catch (boost::filesystem::filesystem_error& e)
@@ -140,3 +125,4 @@ bool zone_manager::update()
   
   return true;
 }
+

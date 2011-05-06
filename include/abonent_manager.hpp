@@ -17,4 +17,35 @@
 */
 
 
-#include "statistic.hpp"
+#ifndef FUNNEL_ABONENT_MANAGER_H
+#define FUNNEL_ABONENT_MANAGER_H
+
+#include <iostream>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp>
+
+#include "common.hpp"
+#include "checksum.hpp"
+#include "abonent.hpp"
+
+class abonent_manager
+{
+public:
+  abonent_manager();
+  virtual ~abonent_manager();
+
+  bool load(const std::string& n_filename);
+  void print();
+  void clear();
+  bool update();
+  
+private:
+  std::vector<abonent> items;
+  boost::filesystem::path filename;
+  unsigned char checksum[MD5_DIGEST_LENGTH];
+  std::time_t timestamp;
+};
+
+#endif // FUNNEL_ABONENT_MANAGER_H

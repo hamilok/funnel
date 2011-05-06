@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+/home/hamilok/projects/funnel/src/checksum.cpp
+checksum.hpp
+/home/hamilok/projects/funnel/src/checksum.hpp
+
 /home/hamilok/projects/funnel/src/main.cpp
 iostream
 -
@@ -24,9 +28,39 @@ config.hpp
 server.hpp
 /home/hamilok/projects/funnel/src/server.hpp
 
+/home/hamilok/projects/funnel/src/network_v4.cpp
+network_v4.hpp
+/home/hamilok/projects/funnel/src/network_v4.hpp
+boost/lexical_cast.hpp
+-
+
+/home/hamilok/projects/funnel/src/zone_manager.cpp
+common.hpp
+/home/hamilok/projects/funnel/src/common.hpp
+zone_manager.hpp
+/home/hamilok/projects/funnel/src/zone_manager.hpp
+
 include/abonent.hpp
 statistic.hpp
 include/statistic.hpp
+
+include/abonent_manager.hpp
+iostream
+-
+boost/filesystem.hpp
+-
+boost/filesystem/fstream.hpp
+-
+boost/thread.hpp
+-
+boost/lexical_cast.hpp
+-
+common.hpp
+include/common.hpp
+checksum.hpp
+include/checksum.hpp
+abonent.hpp
+include/abonent.hpp
 
 include/buffer_pool.hpp
 boost/noncopyable.hpp
@@ -107,8 +141,8 @@ buffer_pool.hpp
 include/buffer_pool.hpp
 zone_manager.hpp
 include/zone_manager.hpp
-abonent.hpp
-include/abonent.hpp
+abonent_manager.hpp
+include/abonent_manager.hpp
 boost-1_42/boost/concept_check.hpp
 -
 

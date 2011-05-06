@@ -15,6 +15,6 @@ FIND_PACKAGE (OpenSSL REQUIRED)
 
 INCLUDE_DIRECTORIES ("${CMAKE_SOURCE_DIR}/include")
 
-ADD_EXECUTABLE (funnel src/main.cpp src/server.cpp src/checksum.cpp src/network_v4.cpp)
+ADD_EXECUTABLE (funnel src/main.cpp src/server.cpp src/zone_manager.cpp src/checksum.cpp src/network_v4.cpp)
 
 TARGET_LINK_LIBRARIES (funnel ${Boost_LIBRARIES} ${OPENSSL_CRYPTO_LIBRARIES})

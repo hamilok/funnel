@@ -207,6 +207,30 @@ src/server.cpp.s:
 	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/server.cpp.s
 .PHONY : src/server.cpp.s
 
+src/zone_manager.o: src/zone_manager.cpp.o
+.PHONY : src/zone_manager.o
+
+# target to build an object file
+src/zone_manager.cpp.o:
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/zone_manager.cpp.o
+.PHONY : src/zone_manager.cpp.o
+
+src/zone_manager.i: src/zone_manager.cpp.i
+.PHONY : src/zone_manager.i
+
+# target to preprocess a source file
+src/zone_manager.cpp.i:
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/zone_manager.cpp.i
+.PHONY : src/zone_manager.cpp.i
+
+src/zone_manager.s: src/zone_manager.cpp.s
+.PHONY : src/zone_manager.s
+
+# target to generate assembly for a file
+src/zone_manager.cpp.s:
+	$(MAKE) -f CMakeFiles/funnel.dir/build.make CMakeFiles/funnel.dir/src/zone_manager.cpp.s
+.PHONY : src/zone_manager.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -228,6 +252,9 @@ help:
 	@echo "... src/server.o"
 	@echo "... src/server.i"
 	@echo "... src/server.s"
+	@echo "... src/zone_manager.o"
+	@echo "... src/zone_manager.i"
+	@echo "... src/zone_manager.s"
 .PHONY : help
 
 

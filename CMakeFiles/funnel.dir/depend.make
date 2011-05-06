@@ -17,6 +17,7 @@ CMakeFiles/funnel.dir/src/main.cpp.o: include/network_v4.hpp
 CMakeFiles/funnel.dir/src/main.cpp.o: include/server.hpp
 CMakeFiles/funnel.dir/src/main.cpp.o: include/statistic.hpp
 CMakeFiles/funnel.dir/src/main.cpp.o: include/zone.hpp
+CMakeFiles/funnel.dir/src/main.cpp.o: include/zone_manager.hpp
 
 CMakeFiles/funnel.dir/src/network_v4.cpp.o: src/network_v4.cpp
 CMakeFiles/funnel.dir/src/network_v4.cpp.o: include/network_v4.hpp
@@ -33,4 +34,13 @@ CMakeFiles/funnel.dir/src/server.cpp.o: include/network_v4.hpp
 CMakeFiles/funnel.dir/src/server.cpp.o: include/server.hpp
 CMakeFiles/funnel.dir/src/server.cpp.o: include/statistic.hpp
 CMakeFiles/funnel.dir/src/server.cpp.o: include/zone.hpp
+CMakeFiles/funnel.dir/src/server.cpp.o: include/zone_manager.hpp
+
+CMakeFiles/funnel.dir/src/zone_manager.cpp.o: src/zone_manager.cpp
+CMakeFiles/funnel.dir/src/zone_manager.cpp.o: include/checksum.hpp
+CMakeFiles/funnel.dir/src/zone_manager.cpp.o: include/common.hpp
+CMakeFiles/funnel.dir/src/zone_manager.cpp.o: include/network_v4.hpp
+CMakeFiles/funnel.dir/src/zone_manager.cpp.o: include/statistic.hpp
+CMakeFiles/funnel.dir/src/zone_manager.cpp.o: include/zone.hpp
+CMakeFiles/funnel.dir/src/zone_manager.cpp.o: include/zone_manager.hpp
 

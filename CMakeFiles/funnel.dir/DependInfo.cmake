@@ -8,6 +8,7 @@ SET(CMAKE_DEPENDS_CHECK_CXX
   "/home/hamilok/projects/funnel/src/main.cpp" "/home/hamilok/projects/funnel/CMakeFiles/funnel.dir/src/main.cpp.o"
   "/home/hamilok/projects/funnel/src/network_v4.cpp" "/home/hamilok/projects/funnel/CMakeFiles/funnel.dir/src/network_v4.cpp.o"
   "/home/hamilok/projects/funnel/src/server.cpp" "/home/hamilok/projects/funnel/CMakeFiles/funnel.dir/src/server.cpp.o"
+  "/home/hamilok/projects/funnel/src/zone_manager.cpp" "/home/hamilok/projects/funnel/CMakeFiles/funnel.dir/src/zone_manager.cpp.o"
   )
 SET(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -1,84 +1,105 @@
+/*
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) 2011  Alexander Bonar <hamilok@volia.net>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 #include "common.hpp"
 #include "server.hpp"
 
-server::server ( const std::string& address, std::size_t port, std::size_t thread_cnt, std::size_t buffer_size, std::size_t update_int )
-    :   socket ( io_service, boost::asio::ip::udp::endpoint ( boost::asio::ip::address::from_string ( address ), port ) ),
-        client_timer ( io_service, boost::posix_time::seconds ( update_int ) ),
-        network_timer ( io_service, boost::posix_time::seconds ( update_int ) ),
-        thread_cnt ( thread_cnt ),
-        update_int ( update_int ),
-        buffer_size ( buffer_size ),
-        flows_cnt ( 0 ),
-        bytes_cnt ( 0 ),
-        running ( true ),
-        client_file ( "./clients.dat" ),
-        network_file ( "./networks.dat" ),
-        buff_pool ( thread_cnt )
+server::server(const std::string& address, std::size_t port, std::size_t thread_cnt, std::size_t buffer_size, std::size_t update_int)
+  :  socket(io_service, boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(address), port)),
+     client_timer(io_service, boost::posix_time::seconds(update_int)),
+     zone_timer(io_service, boost::posix_time::seconds(update_int)),
+     thread_cnt(thread_cnt),
+     update_int(update_int),
+     buffer_size(buffer_size),
+     flows_cnt(0),
+     bytes_cnt(0),
+     running (true),
+     client_file("./clients.dat"),
+     buff_pool(thread_cnt)
 {
-    /// Set receive buffer size for socket
-    boost::asio::socket_base::receive_buffer_size option ( buffer_size );
-    socket.set_option ( option );
-    socket.get_option ( option );
-    std::cout << "Socket receive buffer size: " <<  option.value () << std::endl;
+  /// Set receive buffer size for socket
+  boost::asio::socket_base::receive_buffer_size option(buffer_size);
+  socket.set_option(option);
+  
+  // Check receive buffer size for socket
+  socket.get_option(option);
+  if (buffer_size > option.value())
+  {
+    std::cout << "Socket receive buffer size: " <<  option.value() << std::endl;
+  }
 
-    // Start
-    socket.async_receive_from (
-        boost::asio::buffer ( data, max_length ),
-        sender_endpoint,
-        boost::bind (
-            &server::handle_receive_from,
-            this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred
+  // Start
+  start_receive();
+
+  client_timer.async_wait(boost::bind(&server::handle_update_client, this));
+  zone_timer.async_wait(boost::bind(&server::handle_update_zones, this));
+}
+
+void server::run()
+{
+  for (std::size_t i = 0; i < thread_cnt; ++i)
+  {
+    boost::shared_ptr< boost::thread > thread(
+      new boost::thread(
+        boost::bind(
+          &boost::asio::io_service::run,
+          &io_service
         )
+      )
     );
-
-    client_timer.async_wait( boost::bind( &server::handle_update_client, this ) );
-    network_timer.async_wait( boost::bind( &server::handle_update_network, this ) );
+    threads.push_back(thread);
+  }
 }
 
-void server::run ()
+void server::wait()
 {
-    for ( std::size_t i = 0; i < thread_cnt; ++i )
-    {
-        boost::shared_ptr< boost::thread > thread(
-            new boost::thread(
-                boost::bind(
-                    &boost::asio::io_service::run,
-                    &io_service
-                )
-            )
-        );
-        threads.push_back( thread );
-    }
+  for (std::size_t i = 0; i < threads.size(); ++i)
+    threads[i]->join();
 }
 
-void server::wait ()
+void server::stop()
 {
-    for ( std::size_t i = 0; i < threads.size(); ++i )
-        threads[i]->join();
+  running = false;
+  io_service.stop();
 }
 
-void server::stop ()
+void server::load_zones(const std::string& filename)
 {
-    running = false;
-    io_service.stop();
+  std::cout << "Loading zones from \"" << filename << "\": ";
+  
+  if (zone_mgr.load(filename))
+    std::cout << "OK";
+  else
+    std::cout << "Failed";
+  
+  std::cout << std::endl;
 }
 
-void server::list_zone ()
+void server::list_zones()
 {
-    boost::mutex::scoped_lock lock( mutex );
-
-    for ( std::size_t i = 0; i < network_list.size(); i++ )
-        std::cout << network_list[ i ] << std::endl;
-    std::cout << "total count: " << network_list.size() << std::endl;
+  zone_mgr.print();
 }
 
-void server::clear_zone ()
+void server::clear_zones()
 {
-    boost::mutex::scoped_lock lock( mutex );
-
-    network_list.clear();
+  zone_mgr.clear();
+  std::cout << "Zones cleared" << std::endl;
 }
 
 void server::list_abonent ()
@@ -167,151 +188,89 @@ void server::handle_update_client ()
     client_timer.async_wait ( boost::bind ( &server::handle_update_client, this ) );
 }
 
-void server::handle_update_network()
+void server::handle_update_zones()
 {
-    try
-    {
-        std::size_t filesize = boost::filesystem::file_size ( network_file );
-        std::time_t current_timestamp = boost::filesystem::last_write_time ( network_file );
+  zone_mgr.update();
 
-        // Calc checksum only modified and not empty file
-        if ( current_timestamp > network_timestamp && filesize > 0 )
-        {
-            network_timestamp = current_timestamp;
-
-            checksum_md5 md5;
-            if ( !md5.compare_file ( network_file, network_checksum ) )
-            {
-                boost::filesystem::ifstream file ( network_file, std::ios::binary );
-
-                if ( file.is_open () )
-                {
-                    boost::mutex::scoped_lock lock( mutex );
-
-                    network_list.clear ();
-
-                    std::string record;
-                    boost::smatch result;
-
-                    while ( !std::getline ( file, record ) .eof () )
-                    {
-                        if ( !boost::regex_match ( record, result, boost::regex ( "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})/([0-9]{2})" ) ) )
-                            continue;
-
-                        network_list.push_back (
-                            zone (
-                                boost::asio::ip::address_v4::from_string( result [ 1 ] ).to_ulong (),
-                                atoi ( result [ 2 ].str().c_str() ),
-                                1
-                            )
-                        );
-
-                    }
-                    std::sort ( network_list.begin (), network_list.end () );
-                }
-                file.close ();
-            }
-        }
-    }
-    catch ( boost::filesystem::filesystem_error& e )
-    {
-        std::cerr << e.what () << std::endl;
-    }
-    catch ( std::exception& e )
-    {
-        std::cerr << e.what () << std::endl;
-    }
-
-    network_timer.expires_from_now( boost::posix_time::seconds( update_int ) );
-    network_timer.async_wait( boost::bind( &server::handle_update_network, this ) );
+  zone_timer.expires_from_now( boost::posix_time::seconds( update_int ) );
+  zone_timer.async_wait( boost::bind( &server::handle_update_zones, this ) );
 }
 
-void server::handle_receive_from( const boost::system::error_code& error, std::size_t bytes_recvd )
+void server::start_receive()
 {
-/*
-    nf_packet pkt;
+  socket.async_receive_from (
+    boost::asio::buffer ( data, max_length ),
+    sender_endpoint,
+    boost::bind (
+      &server::handle_receive,
+      this,
+      boost::asio::placeholders::error,
+      boost::asio::placeholders::bytes_transferred
+    )
+  );
+}
+
+void server::handle_receive ( const boost::system::error_code& error, std::size_t bytes_recvd )
+{
+  // Is error
+  if ( error || bytes_recvd == 0 )
+  {
+    std::cout << "Unknown error" << std::endl;
+    return start_receive();
+  }
+
+  // Data is not netflow version 5
+  if ( packet.hdr.get_version() != 5 )
+  {
+    std::cout << "Error: received unknwon packet version" << std::endl;    
+    return start_receive();
+  }
+    
+  // For client & network
+  boost::mutex::scoped_lock lock ( mutex );
+
+  std::cout << boost::this_thread::get_id() << ": process" << std::endl;
+
+  unsigned char zone_code = 0;
+  std::vector< zone >::iterator network_itr;
+  std::vector< abonent >::iterator client_itr;
+
+  // Each per flow
+  for ( std::size_t i = 0; i < packet.hdr.get_count (); i++ )
+  {
+    // reset code
+    zone_code = 0;
+
+    client_itr = binary_search2 ( client_list.begin (), client_list.end (), packet.recs[ i ].srcaddr );
+
+    if ( client_itr != client_list.end () )
     {
-        boost::mutex::scoped_lock lock ( mutex2 );
-        memcpy ( &pkt, &data, sizeof ( nf_packet ) );
+//    network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].dstaddr );
+
+//    if ( network_itr != network_list.end () )
+//    {
+//      zone_code = ( *network_itr ).get_code();
+//    }
+
+      ( *client_itr ).dir[ zone_code ].outgoing += packet.recs[ i ].dOctets;
     }
-
-    socket.async_receive_from (
-        boost::asio::buffer ( data, max_length ),
-        sender_endpoint,
-        boost::bind (
-            &server::handle_receive_from,
-            this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred
-        )
-    );
-*/
-
-    // New data
-    if ( !error && bytes_recvd > 0 )
+    else
     {
-        // Data is netflow version 5
-        if ( packet.hdr.get_version() == 5 )
-        {
-            // For client & network
-            boost::mutex::scoped_lock lock ( mutex );
+      client_itr = binary_search2 ( client_list.begin (), client_list.end (), packet.recs[ i ].dstaddr );
 
-            std::cout << boost::this_thread::get_id() << ": process" << std::endl;
+      if ( client_itr != client_list.end () )
+      {
+//      network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].srcaddr );
 
-            unsigned char zone_code = 0;
-            std::vector< zone >::iterator network_itr;
-            std::vector< abonent >::iterator client_itr;
+//      if ( network_itr != network_list.end () )
+//      {
+//        zone_code = ( *network_itr ).get_code ();
+//      }
 
-            // Each per flow
-            for ( std::size_t i = 0; i < packet.hdr.get_count (); i++ )
-            {
-                // reset code
-                zone_code = 0;
-
-                client_itr = binary_search2 ( client_list.begin (), client_list.end (), packet.recs[ i ].srcaddr );
-
-                if ( client_itr != client_list.end () )
-                {
-//                    network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].dstaddr );
-
-//                    if ( network_itr != network_list.end () )
-//                    {
-//                        zone_code = ( *network_itr ).get_code();
-//                    }
-
-                    ( *client_itr ).dir[ zone_code ].outgoing += packet.recs[ i ].dOctets;
-                }
-                else
-                {
-                    client_itr = binary_search2 ( client_list.begin (), client_list.end (), packet.recs[ i ].dstaddr );
-
-                    if ( client_itr != client_list.end () )
-                    {
-//                        network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].srcaddr );
-
-//                        if ( network_itr != network_list.end () )
-//                        {
-//                            zone_code = ( *network_itr ).get_code ();
-//                        }
-
-                        ( *client_itr ).dir[ zone_code ].incoming += packet.recs[ i ].dOctets;
-                    }
-                }
-            }
-        }
-        else
-            std::cout << "Error: received unknwon packet version" << std::endl;
+        ( *client_itr ).dir[ zone_code ].incoming += packet.recs[ i ].dOctets;
+      }
     }
+  }
 
-    socket.async_receive_from (
-        boost::asio::buffer ( data, max_length ),
-        sender_endpoint,
-        boost::bind (
-            &server::handle_receive_from,
-            this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred
-        )
-    );
-
+  start_receive();
 }

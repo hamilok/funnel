@@ -64,7 +64,7 @@ public:
 
     friend std::ostream& operator << ( std::ostream& out, const zone& rht )
     {
-        out << rht.code;
+        out << "0x"  << std::hex << (int) rht.code;
         out << " : " << boost::asio::ip::address_v4( htonl ( rht.min ) );
         out << " - " << boost::asio::ip::address_v4( htonl ( rht.max ) );
         return out;

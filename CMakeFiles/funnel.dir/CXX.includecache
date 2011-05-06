@@ -24,12 +24,6 @@ config.hpp
 server.hpp
 /home/hamilok/projects/funnel/src/server.hpp
 
-/home/hamilok/projects/funnel/src/server.cpp
-common.hpp
-/home/hamilok/projects/funnel/src/common.hpp
-server.hpp
-/home/hamilok/projects/funnel/src/server.hpp
-
 include/abonent.hpp
 statistic.hpp
 include/statistic.hpp
@@ -111,8 +105,8 @@ netflow_packet.hpp
 include/netflow_packet.hpp
 buffer_pool.hpp
 include/buffer_pool.hpp
-zone.hpp
-include/zone.hpp
+zone_manager.hpp
+include/zone_manager.hpp
 abonent.hpp
 include/abonent.hpp
 boost-1_42/boost/concept_check.hpp
@@ -120,5 +114,23 @@ boost-1_42/boost/concept_check.hpp
 
 include/statistic.hpp
 
+include/zone.hpp
+
+include/zone_manager.hpp
+iostream
+-
+boost/filesystem.hpp
+-
+boost/filesystem/fstream.hpp
+-
+boost/thread.hpp
+-
+boost/lexical_cast.hpp
+-
+common.hpp
+include/common.hpp
+checksum.hpp
+include/checksum.hpp
+zone.hpp
 include/zone.hpp
 

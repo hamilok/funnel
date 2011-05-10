@@ -16,7 +16,7 @@ CMakeFiles/funnel.dir/src/main.cpp.o
  /home/hamilok/projects/funnel/src/main.cpp
  include/abonent.hpp
  include/abonent_manager.hpp
- include/buffer_pool.hpp
+ include/bounded_buffer.hpp
  include/checksum.hpp
  include/common.hpp
  include/config.hpp
@@ -35,7 +35,7 @@ CMakeFiles/funnel.dir/src/server.cpp.o
  /home/hamilok/projects/funnel/src/server.cpp
  include/abonent.hpp
  include/abonent_manager.hpp
- include/buffer_pool.hpp
+ include/bounded_buffer.hpp
  include/checksum.hpp
  include/common.hpp
  include/netflow_header.hpp

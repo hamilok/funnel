@@ -30,7 +30,7 @@ server::server(const std::string& address, std::size_t port, std::size_t thread_
      flows_cnt(0),
      bytes_cnt(0),
      running (true),
-     buff_pool(thread_cnt)
+     packets(255)
 {
   /// Set receive buffer size for socket
   boost::asio::socket_base::receive_buffer_size option(buffer_size);
@@ -54,7 +54,7 @@ void server::run()
 {
   for (std::size_t i = 0; i < thread_cnt; ++i)
   {
-    boost::shared_ptr< boost::thread > thread(
+    boost::shared_ptr<boost::thread> thread(
       new boost::thread(
         boost::bind(
           &boost::asio::io_service::run,
@@ -64,6 +64,16 @@ void server::run()
     );
     threads.push_back(thread);
   }
+
+  boost::shared_ptr<boost::thread> thread(
+    new boost::thread(
+      boost::bind(
+        &server::handle_process,
+        this
+      )
+    )
+  );
+  threads.push_back(thread);
 }
 
 void server::wait()
@@ -86,8 +96,6 @@ void server::load_zones(const std::string& filename)
     std::cout << "OK";
   else
     std::cout << "Failed";
-  
-  std::cout << std::endl;
 }
 
 void server::list_zones()
@@ -98,7 +106,7 @@ void server::list_zones()
 void server::clear_zones()
 {
   zone_mgr.clear();
-  std::cout << "Zones cleared" << std::endl;
+  std::cout << "Zones cleared";
 }
 
 void server::load_abonents(const std::string& filename)
@@ -109,9 +117,6 @@ void server::load_abonents(const std::string& filename)
     std::cout << "OK";
   else
     std::cout << "Failed";
-  
-  std::cout << std::endl;
-  
 }
 
 void server::list_abonents()
@@ -122,42 +127,38 @@ void server::list_abonents()
 void server::clear_abonents()
 {
   abonent_mgr.clear();
-  std::cout << "Abonents cleared" << std::endl;
+  std::cout << "Abonents cleared";
 }
 
-void server::statistic_dump()
+void server::statistic_dump(const std::string& filename)
 {
-/*
-  std::ofstream file("statistic_dump.bin", std::ios::out | std::ios::binary);
-  if (file.is_open())
-  {
-    for (std::size_t i = 0; i < client_list.size(); i++)
-      file << client_list[i];
-  }
-  file.close();
-*/
+  abonent_mgr.dump(filename);
 }
 
-void server::handle_update_abonents()
+void server::handle_update_stats()
 {
-  abonent_mgr.update();
-
-  abonent_timer.expires_from_now ( boost::posix_time::seconds ( update_int ) );
-  abonent_timer.async_wait ( boost::bind ( &server::handle_update_abonents, this ) );
 }
 
 void server::handle_update_zones()
 {
   zone_mgr.update();
 
-  zone_timer.expires_from_now( boost::posix_time::seconds( update_int ) );
-  zone_timer.async_wait( boost::bind( &server::handle_update_zones, this ) );
+  zone_timer.expires_from_now(boost::posix_time::seconds(update_int));
+  zone_timer.async_wait(boost::bind(&server::handle_update_zones, this));
+}
+
+void server::handle_update_abonents()
+{
+  abonent_mgr.update();
+
+  abonent_timer.expires_from_now(boost::posix_time::seconds(update_int));
+  abonent_timer.async_wait(boost::bind(&server::handle_update_abonents, this));
 }
 
 void server::start_receive()
 {
-  socket.async_receive_from (
-    boost::asio::buffer ( data, max_length ),
+  socket.async_receive_from(
+    boost::asio::buffer(&packet, 65535),
     sender_endpoint,
     boost::bind (
       &server::handle_receive,
@@ -168,64 +169,74 @@ void server::start_receive()
   );
 }
 
-void server::handle_receive ( const boost::system::error_code& error, std::size_t bytes_recvd )
+void server::handle_receive(const boost::system::error_code& error, std::size_t bytes_recvd)
 {
+  //std::cout << boost::this_thread::get_id() << ": ";
+
   // Is error
-  if ( error || bytes_recvd == 0 )
+  if (error || bytes_recvd == 0)
   {
     std::cout << "Unknown error" << std::endl;
     return start_receive();
   }
 
   // Data is not netflow version 5
-  if ( packet.hdr.get_version() != 5 )
+  if (packet.hdr.get_version() != 5)
   {
     std::cout << "Error: received unknwon packet version" << std::endl;    
     return start_receive();
   }
-    
-  std::cout << boost::this_thread::get_id() << ": process" << std::endl;
 
+  // Push packet
+  packets.push_front(packet);
+
+  start_receive();
+}
+
+void server::handle_process()
+{
+  nf_packet pkt;
+  bool found = false;
+  zone_manager::iter zone;
+  abonent_manager::iter abonent;
   unsigned char zone_code = 0;
-  std::vector< zone >::iterator network_itr;
-  std::vector< abonent >::iterator client_itr;
-/*
-  // Each per flow
-  for ( std::size_t i = 0; i < packet.hdr.get_count (); i++ )
+
+  while (running)
   {
-    // reset code
-    zone_code = 0;
+    // Pop packet
+    packets.pop_back(&pkt);
 
-    client_itr = binary_search2 ( client_list.begin (), client_list.end (), packet.recs[ i ].srcaddr );
-
-    if ( client_itr != client_list.end () )
+    // Each per flow
+    for (std::size_t i = 0; i < pkt.hdr.get_count(); i++)
     {
-      network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].dstaddr );
+      // Reset zone
+      zone_code = 0;
 
-      if ( network_itr != network_list.end () )
+      abonent = abonent_mgr.find(pkt.recs[i].srcaddr, found);
+      if (found)
       {
-        zone_code = ( *network_itr ).get_code();
-      }
-
-      ( *client_itr ).dir[ zone_code ].outgoing += packet.recs[ i ].dOctets;
-    }
-    else
-    {
-      client_itr = binary_search2 ( client_list.begin (), client_list.end (), packet.recs[ i ].dstaddr );
-
-      if ( client_itr != client_list.end () )
-      {
-        network_itr = binary_search2 ( network_list.begin (), network_list.end (), pkt.recs[ i ].srcaddr );
-
-        if ( network_itr != network_list.end () )
+        zone = zone_mgr.find(pkt.recs[i].dstaddr, found);
+        if (found)
         {
-          zone_code = ( *network_itr ).get_code ();
+          zone_code = (*zone).get_code();
         }
 
-        ( *client_itr ).dir[ zone_code ].incoming += packet.recs[ i ].dOctets;
+        (*abonent).dir[zone_code].outgoing += pkt.recs[i].dOctets;
+      }
+      else
+      {
+        abonent = abonent_mgr.find(pkt.recs[i].dstaddr, found);
+        if (found)
+        {
+          zone = zone_mgr.find(pkt.recs[i].srcaddr, found);
+          if (found)
+          {
+            zone_code = (*zone).get_code();
+          }
+
+          (*abonent).dir[zone_code].incoming += pkt.recs[i].dOctets;
+        }
       }
     }
   }
-*/
-  start_receive();
 }

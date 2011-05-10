@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/hamilok/projects/funnel/src/checksum.cpp
-checksum.hpp
-/home/hamilok/projects/funnel/src/checksum.hpp
-
 /home/hamilok/projects/funnel/src/main.cpp
 iostream
 -
@@ -27,18 +23,6 @@ config.hpp
 /home/hamilok/projects/funnel/src/config.hpp
 server.hpp
 /home/hamilok/projects/funnel/src/server.hpp
-
-/home/hamilok/projects/funnel/src/network_v4.cpp
-network_v4.hpp
-/home/hamilok/projects/funnel/src/network_v4.hpp
-boost/lexical_cast.hpp
--
-
-/home/hamilok/projects/funnel/src/zone_manager.cpp
-common.hpp
-/home/hamilok/projects/funnel/src/common.hpp
-zone_manager.hpp
-/home/hamilok/projects/funnel/src/zone_manager.hpp
 
 include/abonent.hpp
 statistic.hpp
@@ -62,8 +46,18 @@ include/checksum.hpp
 abonent.hpp
 include/abonent.hpp
 
-include/buffer_pool.hpp
-boost/noncopyable.hpp
+include/bounded_buffer.hpp
+boost/circular_buffer.hpp
+-
+boost/thread/mutex.hpp
+-
+boost/thread/condition.hpp
+-
+boost/thread/thread.hpp
+-
+boost/progress.hpp
+-
+boost/bind.hpp
 -
 
 include/checksum.hpp
@@ -137,8 +131,8 @@ common.hpp
 include/common.hpp
 netflow_packet.hpp
 include/netflow_packet.hpp
-buffer_pool.hpp
-include/buffer_pool.hpp
+bounded_buffer.hpp
+include/bounded_buffer.hpp
 zone_manager.hpp
 include/zone_manager.hpp
 abonent_manager.hpp

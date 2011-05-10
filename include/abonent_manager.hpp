@@ -33,10 +33,15 @@
 class abonent_manager
 {
 public:
+  typedef std::vector<abonent>::iterator iter;
+
+public:
   abonent_manager();
   virtual ~abonent_manager();
 
   bool load(const std::string& n_filename);
+  iter find(unsigned int address, bool& found);
+  void dump(const std::string& filename);
   void print();
   void clear();
   bool update();

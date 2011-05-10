@@ -91,20 +91,33 @@ int main( int argc, char** argv )
     boost::smatch results;
     while (true)
     {
-      std::cout << std::endl;
       std::cout << "funnel> ";
       std::getline(std::cin, cmd);
-      std::cout << std::endl;
 
-      if (boost::regex_match(cmd, results, boost::regex("(stop|exit|quit)")))
+      if (0 == cmd.length())
+      {
+        continue;
+      }
+      else if (boost::regex_match(cmd, results, boost::regex("(stop|exit|quit)")))
       {
         srv.stop();
         break;
       }
       else if ("help" == cmd)
       {
-        std::cout << "zones ( load [filename] | list | clear )" << std::endl;
-        std::cout << "abonents ( load [filename] | list | clear )" << std::endl;
+        std::cout << "zones ( load filename | list | clear )";
+        std::cout << std::endl;
+        std::cout << "abonents ( load filename | list | clear )";
+        std::cout << std::endl;
+        std::cout << "statistic ( dump filename )";
+      }
+      else if (boost::regex_match(cmd, results, boost::regex("zones")))
+      {
+        std::cout << "zones ( load filename | list | clear)";
+      }
+      else if (boost::regex_match(cmd, results, boost::regex("zones load")))
+      {
+        std::cout << "zones load filename";
       }
       else if (boost::regex_match(cmd, results, boost::regex("zones load (.+)")))
       {
@@ -118,6 +131,14 @@ int main( int argc, char** argv )
       {
         srv.clear_zones();
       }
+      else if (boost::regex_match(cmd, results, boost::regex("abonents")))
+      {
+        std::cout << "abonents ( load filename | list | clear )";
+      }
+      else if (boost::regex_match(cmd, results, boost::regex("abonents load")))
+      {
+        std::cout << "abonents load filename";
+      }
       else if (boost::regex_match(cmd, results, boost::regex("abonents load (.+)")))
       {
         srv.load_abonents(results[1].str().c_str());
@@ -130,14 +151,24 @@ int main( int argc, char** argv )
       {
         srv.clear_abonents();
       }
+      else if (boost::regex_match(cmd, results, boost::regex("statistic")))
+      {
+        std::cout << "statistic ( dump filename )";
+      }
       else if (boost::regex_match(cmd, results, boost::regex("statistic dump")))
       {
-        srv.statistic_dump();
+        std::cout << "statistic dump filename";
       }
-      else if (0 != cmd.length())
+      else if (boost::regex_match(cmd, results, boost::regex("statistic dump (.+)")))
       {
-        std::cout << "Unknown command" << std::endl;
+        srv.statistic_dump(results[1].str().c_str());
       }
+      else
+      {
+	std::cout << "Unknown command: " << cmd;
+      }
+
+      std::cout << std::endl;
     }
 
     srv.wait ();

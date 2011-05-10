@@ -33,6 +33,10 @@
 class zone_manager
 {
 public:
+  typedef std::vector<zone> list;
+  typedef std::vector<zone>::iterator iter;
+
+public:
   zone_manager();
   virtual ~zone_manager();
   
@@ -40,12 +44,13 @@ public:
   void add(unsigned long address, unsigned int cidr, unsigned char code);
 
   bool load(const std::string& filename);
+  iter find(unsigned int address, bool& found);
   void print();
   void clear();
   bool update();
     
 private:
-  std::vector<zone> items;
+  list items;
   boost::filesystem::path filename;
   std::time_t timestamp;
   unsigned char checksum[MD5_DIGEST_LENGTH];

@@ -19,7 +19,7 @@
 
 #include "abonent_manager.hpp"
 
-abonent_manager::abonent_manager() : filename("./misc/abonents.dat")
+abonent_manager::abonent_manager() : filename("./misc/clients.dat")
 {
 }
 
@@ -59,30 +59,104 @@ bool abonent_manager::load(const std::string& n_filename)
   file.close();
 }
 
+abonent_manager::iter abonent_manager::find(unsigned int address, bool& found)
+{
+  iter res = binary_search2(items.begin(), items.end(), address);
+
+  found = (res != items.end());
+
+  return res;
+}
+
+void abonent_manager::dump(const std::string& filename)
+{
+  std::ofstream file(filename.c_str(), std::ios::out | std::ios::binary);
+
+  if (!file.is_open())
+  {
+    std::cout << "Error open";
+    return;
+  }
+
+  for (std::size_t i = 0; i < items.size(); i++)
+    file << items[i];
+
+  file.close();
+}
+
 void abonent_manager::print()
 {
+  char c = 0;
+  std::size_t n = 0;
+  std::size_t inc = 0, out = 0;
   std::size_t cnt = items.size();
-  
-  std::cout << "+-------------------+-----------------+" << std::endl;
-  std::cout << "|    MAC Address    |   IP Address    |" << std::endl;
-  std::cout << "+-------------------+-----------------+" << std::endl;
+  std::string str;
+
+  std::cout << "+-------------------+-----------------+------+----------+----------+" << std::endl;
+  std::cout << "|    MAC Address    |   IP Address    | Zone | Incoming | Outgoing |" << std::endl;
+  std::cout << "+-------------------+-----------------+------+----------+----------+" << std::endl;
   
   if (0 == cnt)
   {
-    std::cout << "|             Empty list              |" << std::endl;
+    std::cout << "|                           Empty list                             |" << std::endl;
+    std::cout << "+------------------------------------------------------------------+" << std::endl;
   }
   else
   {
-    for (std::size_t i = 0; i < cnt; i++)
+    for (std::size_t i = 0; i < cnt; i++, n++)
     {
-      std::cout << "| " << std::setw(17) << items[i].get_mac() << " ";
-      std::cout << "| " << std::setw(15) << boost::asio::ip::address_v4(items[i].get_ip()).to_string() << " ";
-      std::cout << "|" << std::endl;
+      for (std::size_t j = 0; j < 3; j++)
+      {
+        std::cout << "| ";
+
+        if (1 != j)
+        {
+          std::cout << std::setw(17) << " ";
+          std::cout << " | ";
+          std::cout << std::setw(15) << " ";
+        }
+        else
+        {
+          std::cout << std::setw(17) << items[i].get_mac();
+          std::cout << " | ";
+          std::cout << std::setw(15) << boost::asio::ip::address_v4(items[i].get_ip()).to_string();
+        }
+      
+        std::cout << " | ";
+        std::cout << std::setw(4) << j;
+        std::cout << " | ";
+        std::cout << std::setw(8) << htonl(items[i].dir[j].incoming);
+        std::cout << " | ";
+        std::cout << std::setw(8) << htonl(items[i].dir[j].outgoing);
+        std::cout << " |"  << std::endl;
+
+        inc += htonl(items[i].dir[j].incoming);
+        out += htonl(items[i].dir[j].outgoing);
+      }
+      
+      std::cout << "+-------------------+-----------------+------+----------+----------+" << std::endl;
+
+      if ('a' != c && 10 == n)
+      {
+        std::cout << "  -- Press 'a' for scroll down, 'q' for break or enter key for paging --  " << std::endl;
+
+        n = 0;
+        c = std::getchar();
+
+        if (c == 'q')
+          break;
+        
+        std::cout << "+-------------------+-----------------+------+----------+----------+" << std::endl;
+      }
     }
   }
-  
-  std::cout << "+-------------------+-----------------+" << std::endl;
-  std::cout << "Total count: " << cnt << std::endl;
+
+  std::cout << "Total abonents: " << cnt;
+  if (c != 'q')
+  {
+    std::cout << ", incoming: " << inc;
+    std::cout << ", outgoing: " << out;
+  }
 }
 
 void abonent_manager::clear()

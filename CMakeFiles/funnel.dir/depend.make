@@ -15,7 +15,7 @@ CMakeFiles/funnel.dir/src/checksum.cpp.o: include/checksum.hpp
 CMakeFiles/funnel.dir/src/main.cpp.o: src/main.cpp
 CMakeFiles/funnel.dir/src/main.cpp.o: include/abonent.hpp
 CMakeFiles/funnel.dir/src/main.cpp.o: include/abonent_manager.hpp
-CMakeFiles/funnel.dir/src/main.cpp.o: include/buffer_pool.hpp
+CMakeFiles/funnel.dir/src/main.cpp.o: include/bounded_buffer.hpp
 CMakeFiles/funnel.dir/src/main.cpp.o: include/checksum.hpp
 CMakeFiles/funnel.dir/src/main.cpp.o: include/common.hpp
 CMakeFiles/funnel.dir/src/main.cpp.o: include/config.hpp
@@ -34,7 +34,7 @@ CMakeFiles/funnel.dir/src/network_v4.cpp.o: include/network_v4.hpp
 CMakeFiles/funnel.dir/src/server.cpp.o: src/server.cpp
 CMakeFiles/funnel.dir/src/server.cpp.o: include/abonent.hpp
 CMakeFiles/funnel.dir/src/server.cpp.o: include/abonent_manager.hpp
-CMakeFiles/funnel.dir/src/server.cpp.o: include/buffer_pool.hpp
+CMakeFiles/funnel.dir/src/server.cpp.o: include/bounded_buffer.hpp
 CMakeFiles/funnel.dir/src/server.cpp.o: include/checksum.hpp
 CMakeFiles/funnel.dir/src/server.cpp.o: include/common.hpp
 CMakeFiles/funnel.dir/src/server.cpp.o: include/netflow_header.hpp

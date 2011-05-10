@@ -69,6 +69,15 @@ bool zone_manager::load(const std::string& n_filename)
   return true;
 }
 
+zone_manager::iter zone_manager::find(unsigned int address, bool& found)
+{
+  iter res = binary_search2(items.begin(), items.end(), address);
+  
+  found = (res != items.end());
+  
+  return res;
+}
+
 void zone_manager::print()
 {
   std::size_t cnt = items.size();
@@ -93,7 +102,7 @@ void zone_manager::print()
   }
   
   std::cout << "+------------+-----------------+-----------------+" << std::endl;
-  std::cout << "Total count: " << cnt << std::endl;
+  std::cout << "Total count: " << cnt;
 }
 
 void zone_manager::clear()
@@ -107,7 +116,7 @@ bool zone_manager::update()
   {
     if (0 == boost::filesystem::file_size(filename))
     {
-      std::cout << "File is empty" << std::endl;
+      std::cout << "File is empty";
       return false;
     }
 
@@ -120,7 +129,7 @@ bool zone_manager::update()
       checksum_md5 md5;
       if (md5.compare_file(filename, checksum))
       {
-        std::cout << "No updates" << std::endl;
+        std::cout << "No updates";
         return false;
       }
       

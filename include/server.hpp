@@ -32,7 +32,7 @@
 
 #include "common.hpp"
 #include "netflow_packet.hpp"
-#include "buffer_pool.hpp"
+#include "bounded_buffer.hpp"
 
 #include "zone_manager.hpp"
 #include "abonent_manager.hpp"
@@ -56,17 +56,16 @@ public:
   void list_abonents();
   void clear_abonents();
 
-  void statistic_dump();
+  void statistic_dump(const std::string& filename);
 
 private:
-  void handle_process();
-
-  void handle_update_stat();
+  void handle_update_stats();
   void handle_update_zones();
   void handle_update_abonents();
 
   void start_receive();
   void handle_receive(const boost::system::error_code& error, std::size_t bytes_recvd);
+  void handle_process();
 
 private:
   boost::asio::io_service io_service;
@@ -85,23 +84,11 @@ private:
   abonent_manager abonent_mgr;
   boost::asio::deadline_timer abonent_timer;
 
-  deque2<nf_packet> packets;
-
   bool running;
-  std::vector < boost::shared_ptr < boost::thread > > threads;
+  std::vector<boost::shared_ptr<boost::thread> > threads;
 
-  enum
-  {
-    max_length = 65535
-  };
-
-  union
-  {
-    nf_packet packet;
-    char data[max_length];
-  };
-
-  buffer_pool < nf_packet > buff_pool;
+  nf_packet packet;
+  bounded_buffer<nf_packet> packets;
 
   std::size_t buffer_size;
 

@@ -37,8 +37,6 @@
 #include "zone_manager.hpp"
 #include "abonent_manager.hpp"
 
-#include <boost-1_42/boost/concept_check.hpp>
-
 class server : private boost::noncopyable
 {
 public:

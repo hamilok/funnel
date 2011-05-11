@@ -44,16 +44,16 @@ int main(int argc, char** argv)
 
     boost::program_options::options_description config("Configuration");
     config.add_options()
-      ("address,a",   boost::program_options::value< std::string >(&address)->default_value(address),         "IP address. By default, bind to any address.")
-      ("port,p",      boost::program_options::value< std::size_t >(&port)->default_value(port),               "Port number.")
-      ("threads,t",   boost::program_options::value< std::size_t >(&thread_cnt)->default_value(thread_cnt),   "Threads count. By default, the maximum available.")
-      ("buffer,b",    boost::program_options::value< std::size_t >(&buffer_size)->default_value(buffer_size), "Socket receiver buffer size.")
-      ("update,u",    boost::program_options::value< std::size_t >(&update_int)->default_value(update_int),   "Update interval in seconds.");
+      ("address,a",   boost::program_options::value<std::string>(&address)->default_value(address),         "IP address. By default, bind to any address.")
+      ("port,p",      boost::program_options::value<std::size_t>(&port)->default_value(port),               "Port number.")
+      ("threads,t",   boost::program_options::value<std::size_t>(&thread_cnt)->default_value(thread_cnt),   "Threads count. By default, the maximum available.")
+      ("buffer,b",    boost::program_options::value<std::size_t>(&buffer_size)->default_value(buffer_size), "Socket receiver buffer size.")
+      ("update,u",    boost::program_options::value<std::size_t>(&update_int)->default_value(update_int),   "Update interval in seconds.");
 
     boost::program_options::options_description hidden("Hidden options");
     hidden.add_options()
-      ("client-list", boost::program_options::value< std::vector< std::string > >(), "client list")
-      ("network-list", boost::program_options::value< std::vector< std::string > >(), "network list");
+      ("zones", boost::program_options::value<std::string>(), "Zones filename")
+      ("abonents", boost::program_options::value<std::string>(), "Abonents filename");
 
     boost::program_options::options_description cmdline_options;
     cmdline_options.add(generic).add(config).add(hidden);
@@ -87,15 +87,29 @@ int main(int argc, char** argv)
     server srv(address, port, thread_cnt, buffer_size, update_int);
     srv.run();
 
+    if (vm.count("zones"))
+    {
+      srv.load_zones(vm["zones"].as<std::string>());
+      std::cout << std::endl;
+    }
+    
+    if (vm.count("abonents"))
+    {
+      srv.load_abonents(vm["abonents"].as<std::string>());
+      std::cout << std::endl;
+    }
+
     std::string cmd;
     boost::smatch results;
     while (true)
     {
       std::cout << "funnel> ";
       std::getline(std::cin, cmd);
-      
+
       if (std::cin.eof())
       {
+        std::cout << std::endl;
+        srv.stop();
         break;
       }
 
@@ -103,7 +117,8 @@ int main(int argc, char** argv)
       {
         continue;
       }
-      else if (boost::regex_match(cmd, results, boost::regex("(stop|exit|quit)")))
+
+      if (boost::regex_match(cmd, results, boost::regex("(stop|exit|quit)")))
       {
         srv.stop();
         break;

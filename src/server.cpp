@@ -65,6 +65,7 @@ void server::run()
     threads.push_back(thread);
   }
 
+/*
   boost::shared_ptr<boost::thread> thread(
     new boost::thread(
       boost::bind(
@@ -74,6 +75,7 @@ void server::run()
     )
   );
   threads.push_back(thread);
+  */
 }
 
 void server::wait()

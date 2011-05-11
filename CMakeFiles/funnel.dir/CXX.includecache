@@ -24,6 +24,12 @@ config.hpp
 server.hpp
 /home/hamilok/projects/funnel/src/server.hpp
 
+/home/hamilok/projects/funnel/src/server.cpp
+common.hpp
+/home/hamilok/projects/funnel/src/common.hpp
+server.hpp
+/home/hamilok/projects/funnel/src/server.hpp
+
 include/abonent.hpp
 statistic.hpp
 include/statistic.hpp
@@ -77,8 +83,6 @@ openssl/md5.h
 -
 
 include/common.hpp
-deque
--
 iostream
 -
 iterator
@@ -91,8 +95,6 @@ network_v4.hpp
 include/network_v4.hpp
 statistic.hpp
 include/statistic.hpp
-boost-1_42/boost/concept_check.hpp
--
 
 include/config.hpp
 

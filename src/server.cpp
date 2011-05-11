@@ -135,6 +135,13 @@ void server::statistic_dump(const std::string& filename)
   abonent_mgr.dump(filename);
 }
 
+void server::statistic_print()
+{
+  std::cout << "flow count: " << flows_cnt;
+  std::cout << std::endl;
+  std::cout << "bytes count: " << bytes_cnt;
+}
+
 void server::handle_update_stats()
 {
 }
@@ -205,12 +212,15 @@ void server::handle_process()
   {
     // Pop packet
     packets.pop_back(&pkt);
+    
+    flows_cnt += 1;
 
     // Each per flow
     for (std::size_t i = 0; i < pkt.hdr.get_count(); i++)
     {
       // Reset zone
       zone_code = 0;
+      bytes_cnt += pkt.recs[i].dOctets;
 
       abonent = abonent_mgr.find(pkt.recs[i].srcaddr, found);
       if (found)

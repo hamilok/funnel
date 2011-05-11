@@ -109,7 +109,7 @@ int main( int argc, char** argv )
         std::cout << std::endl;
         std::cout << "abonents ( load filename | list | clear )";
         std::cout << std::endl;
-        std::cout << "statistic ( dump filename )";
+        std::cout << "statistic ( dump filename | print )";
       }
       else if (boost::regex_match(cmd, results, boost::regex("zones")))
       {
@@ -153,7 +153,7 @@ int main( int argc, char** argv )
       }
       else if (boost::regex_match(cmd, results, boost::regex("statistic")))
       {
-        std::cout << "statistic ( dump filename )";
+        std::cout << "statistic ( dump filename | print )";
       }
       else if (boost::regex_match(cmd, results, boost::regex("statistic dump")))
       {
@@ -162,6 +162,10 @@ int main( int argc, char** argv )
       else if (boost::regex_match(cmd, results, boost::regex("statistic dump (.+)")))
       {
         srv.statistic_dump(results[1].str().c_str());
+      }
+      else if (boost::regex_match(cmd, results, boost::regex("statistic print")))
+      {
+	srv.statistic_print();
       }
       else
       {

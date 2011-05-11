@@ -57,6 +57,7 @@ public:
   void clear_abonents();
 
   void statistic_dump(const std::string& filename);
+  void statistic_print();
 
 private:
   void handle_update_stats();

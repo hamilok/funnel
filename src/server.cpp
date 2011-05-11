@@ -30,7 +30,7 @@ server::server(const std::string& address, std::size_t port, std::size_t thread_
      flows_cnt(0),
      bytes_cnt(0),
      running (true),
-     packets(255)
+     packets(buffer_size)
 {
   /// Set receive buffer size for socket
   boost::asio::socket_base::receive_buffer_size option(buffer_size);

@@ -27,7 +27,7 @@
 #include "config.hpp"
 #include "server.hpp"
 
-int main( int argc, char** argv )
+int main(int argc, char** argv)
 {
   try
   {
@@ -81,12 +81,12 @@ int main( int argc, char** argv )
 
     /**
      * Start server
-     * 
-     * 
+     *
+     *
      */
     server srv(address, port, thread_cnt, buffer_size, update_int);
     srv.run();
-        
+
     std::string cmd;
     boost::smatch results;
     while (true)

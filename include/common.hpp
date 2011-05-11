@@ -24,6 +24,7 @@
 #include <iterator>
 #include <algorithm>
 
+#include <boost/regex.hpp>
 #include <boost/thread.hpp>
 
 #include "network_v4.hpp"

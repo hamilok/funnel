@@ -57,6 +57,8 @@ bool abonent_manager::load(const std::string& n_filename)
   std::sort(items.begin(), items.end());
 
   file.close();
+  
+  return true;
 }
 
 abonent_manager::iter abonent_manager::find(unsigned int address, bool& found)

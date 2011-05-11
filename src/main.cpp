@@ -93,6 +93,11 @@ int main(int argc, char** argv)
     {
       std::cout << "funnel> ";
       std::getline(std::cin, cmd);
+      
+      if (std::cin.eof())
+      {
+        break;
+      }
 
       if (0 == cmd.length())
       {

@@ -47,24 +47,34 @@ public:
     m_not_empty.notify_one();
   }
 
-  void pop_back(value_type* pItem)
+  bool pop_back(value_type* pItem)
   {
     boost::mutex::scoped_lock lock(m_mutex);
-    m_not_empty.wait(lock, boost::bind(&bounded_buffer<value_type>::is_not_empty, this));
-    *pItem = m_container[--m_unread];
+
+    //m_not_empty.wait(lock, boost::bind(&bounded_buffer<value_type>::is_not_empty, this));
+    bool result = m_not_empty.timed_wait(lock, boost::posix_time::microseconds(500), boost::bind(&bounded_buffer<value_type>::is_not_empty, this));
+
+    if (result)
+    {
+      *pItem = m_container[--m_unread];
+    }
+ 
     lock.unlock();
     m_not_full.notify_one();
+    
+    return result;
   }
 
 private:
-  bounded_buffer(const bounded_buffer&);              // Disabled copy constructor
-  bounded_buffer& operator = (const bounded_buffer&); // Disabled assign operator
+  bounded_buffer(const bounded_buffer&);            // Disabled copy constructor
+  bounded_buffer& operator=(const bounded_buffer&); // Disabled assign operator
 
   bool is_not_empty() const { return m_unread > 0; }
   bool is_not_full() const { return m_unread < m_container.capacity(); }
 
   size_type m_unread;
   container_type m_container;
+
   boost::mutex m_mutex;
   boost::condition m_not_empty;
   boost::condition m_not_full;

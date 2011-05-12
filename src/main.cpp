@@ -39,8 +39,8 @@ int main(int argc, char** argv)
 
     boost::program_options::options_description generic("Generic options");
     generic.add_options()
-      ("version,v", "Print version string")
-      ("help,h",    "Produce help message");
+      ("help,h",    "Produce help message")
+      ("version,v", "Print version string");
 
     boost::program_options::options_description config("Configuration");
     config.add_options()
@@ -81,18 +81,18 @@ int main(int argc, char** argv)
 
     /**
      * Start server
-     *
-     *
      */
     server srv(address, port, thread_cnt, buffer_size, update_int);
     srv.run();
 
+    // Autoloading zones
     if (vm.count("zones"))
     {
       srv.load_zones(vm["zones"].as<std::string>());
       std::cout << std::endl;
     }
-    
+
+    // Autoloading abonents
     if (vm.count("abonents"))
     {
       srv.load_abonents(vm["abonents"].as<std::string>());

@@ -65,7 +65,6 @@ void server::run()
     threads.push_back(thread);
   }
 
-/*
   boost::shared_ptr<boost::thread> thread(
     new boost::thread(
       boost::bind(
@@ -75,7 +74,6 @@ void server::run()
     )
   );
   threads.push_back(thread);
-  */
 }
 
 void server::wait()
@@ -213,7 +211,8 @@ void server::handle_process()
   while (running)
   {
     // Pop packet
-    packets.pop_back(&pkt);
+    if (!packets.pop_back(&pkt))
+      continue;
     
     flows_cnt += 1;
 

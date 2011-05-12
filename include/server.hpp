@@ -42,6 +42,8 @@ class server : private boost::noncopyable
 public:
   explicit server(const std::string& address, std::size_t port, std::size_t thread_cnt, std::size_t buffer_size, std::size_t update_int);
 
+  void setup();
+
   void run();
   void wait();
   void stop();
@@ -51,14 +53,11 @@ public:
   void clear_zones();
 
   void load_abonents(const std::string& filename);
+  void dump_abonents(const std::string& filename);
   void list_abonents();
   void clear_abonents();
 
-  void statistic_dump(const std::string& filename);
-  void statistic_print();
-
 private:
-  void handle_update_stats();
   void handle_update_zones();
   void handle_update_abonents();
 
@@ -67,6 +66,10 @@ private:
   void handle_process();
 
 private:
+  /**
+   * System
+   */
+  boost::thread_group threads;
   boost::asio::io_service io_service;
   boost::asio::ip::udp::socket socket;
   boost::asio::ip::udp::endpoint sender_endpoint;
@@ -83,19 +86,18 @@ private:
   abonent_manager abonent_mgr;
   boost::asio::deadline_timer abonent_timer;
 
-  bool running;
-  std::vector<boost::shared_ptr<boost::thread> > threads;
-
+  /**
+   * Packets
+   */
   nf_packet packet;
   bounded_buffer<nf_packet> packets;
 
-  std::size_t buffer_size;
-
-  std::size_t thread_cnt;
-  std::size_t update_int;
-
+  bool running;
   std::size_t flows_cnt;
   std::size_t bytes_cnt;
+  std::size_t thread_cnt;
+  std::size_t update_int;
+  std::size_t buffer_size;
 };
 
 #endif /* FUNNEL_SERVER_HPP */

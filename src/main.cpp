@@ -127,9 +127,7 @@ int main(int argc, char** argv)
       {
         std::cout << "zones ( load filename | list | clear )";
         std::cout << std::endl;
-        std::cout << "abonents ( load filename | list | clear )";
-        std::cout << std::endl;
-        std::cout << "statistic ( dump filename | print )";
+        std::cout << "abonents ( ( load | dump ) filename | list | clear )";
       }
       else if (boost::regex_match(cmd, results, boost::regex("zones")))
       {
@@ -153,7 +151,7 @@ int main(int argc, char** argv)
       }
       else if (boost::regex_match(cmd, results, boost::regex("abonents")))
       {
-        std::cout << "abonents ( load filename | list | clear )";
+        std::cout << "abonents ( ( load | dump ) filename | list | clear )";
       }
       else if (boost::regex_match(cmd, results, boost::regex("abonents load")))
       {
@@ -163,6 +161,14 @@ int main(int argc, char** argv)
       {
         srv.load_abonents(results[1].str().c_str());
       }
+      else if (boost::regex_match(cmd, results, boost::regex("abonents dump")))
+      {
+        std::cout << "abonents dump filename";
+      }
+      else if (boost::regex_match(cmd, results, boost::regex("abonents dump (.+)")))
+      {
+        srv.dump_abonents(results[1].str().c_str());
+      }
       else if (boost::regex_match(cmd, results, boost::regex("abonents list")))
       {
         srv.list_abonents();
@@ -170,22 +176,6 @@ int main(int argc, char** argv)
       else if (boost::regex_match(cmd, results, boost::regex("abonents clear")))
       {
         srv.clear_abonents();
-      }
-      else if (boost::regex_match(cmd, results, boost::regex("statistic")))
-      {
-        std::cout << "statistic ( dump filename | print )";
-      }
-      else if (boost::regex_match(cmd, results, boost::regex("statistic dump")))
-      {
-        std::cout << "statistic dump filename";
-      }
-      else if (boost::regex_match(cmd, results, boost::regex("statistic dump (.+)")))
-      {
-        srv.statistic_dump(results[1].str().c_str());
-      }
-      else if (boost::regex_match(cmd, results, boost::regex("statistic print")))
-      {
-	srv.statistic_print();
       }
       else
       {

@@ -32,6 +32,19 @@ server::server(const std::string& address, std::size_t port, std::size_t thread_
      running (true),
      packets(buffer_size)
 {
+  // Setup
+  setup();
+
+  // Start recv
+  start_receive();
+
+  // Start update
+  zone_timer.async_wait(boost::bind(&server::handle_update_zones, this));
+  abonent_timer.async_wait(boost::bind(&server::handle_update_abonents, this));
+}
+
+void server::setup()
+{
   /// Set receive buffer size for socket
   boost::asio::socket_base::receive_buffer_size option(buffer_size);
   socket.set_option(option);
@@ -42,44 +55,25 @@ server::server(const std::string& address, std::size_t port, std::size_t thread_
   {
     std::cout << "Socket receive buffer size: " <<  option.value() << std::endl;
   }
-
-  // Start
-  start_receive();
-
-  zone_timer.async_wait(boost::bind(&server::handle_update_zones, this));
-  abonent_timer.async_wait(boost::bind(&server::handle_update_abonents, this));
 }
 
 void server::run()
 {
   for (std::size_t i = 0; i < thread_cnt; ++i)
   {
-    boost::shared_ptr<boost::thread> thread(
-      new boost::thread(
-        boost::bind(
-          &boost::asio::io_service::run,
-          &io_service
-        )
-      )
+    threads.create_thread(
+      boost::bind(&server::handle_process, this)
     );
-    threads.push_back(thread);
   }
 
-  boost::shared_ptr<boost::thread> thread(
-    new boost::thread(
-      boost::bind(
-        &server::handle_process,
-        this
-      )
-    )
+  threads.create_thread(
+    boost::bind(&boost::asio::io_service::run, &io_service)
   );
-  threads.push_back(thread);
 }
 
 void server::wait()
 {
-  for (std::size_t i = 0; i < threads.size(); ++i)
-    threads[i]->join();
+  threads.join_all();
 }
 
 void server::stop()
@@ -119,6 +113,13 @@ void server::load_abonents(const std::string& filename)
     std::cout << "Failed";
 }
 
+void server::dump_abonents(const std::string& filename)
+{
+  std::cout << "Dumping abonents to: " << filename;
+
+  abonent_mgr.dump(filename);
+}
+
 void server::list_abonents()
 {
   abonent_mgr.print();
@@ -128,22 +129,6 @@ void server::clear_abonents()
 {
   abonent_mgr.clear();
   std::cout << "Abonents cleared";
-}
-
-void server::statistic_dump(const std::string& filename)
-{
-  abonent_mgr.dump(filename);
-}
-
-void server::statistic_print()
-{
-  std::cout << "flow count: " << flows_cnt;
-  std::cout << std::endl;
-  std::cout << "bytes count: " << bytes_cnt;
-}
-
-void server::handle_update_stats()
-{
 }
 
 void server::handle_update_zones()

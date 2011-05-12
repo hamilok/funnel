@@ -81,7 +81,17 @@ public:
   friend std::ofstream& operator<<(std::ofstream& out, const abonent& rht)
   {
     for (std::size_t i = 0; i < 3; i++)
-      out << boost::asio::ip::address_v4(htonl(rht.ip)) << "|" <<  i << "|" << htonl(rht.dir[i].incoming) << "|" << htonl(rht.dir[i].outgoing) << std::endl;
+    {
+      out << boost::asio::ip::address_v4(htonl(rht.ip));
+      out << "|";
+      out <<  i;
+      out << "|";
+      out << htonl(rht.dir[i].incoming);
+      out << "|";
+      out << htonl(rht.dir[i].outgoing);
+      out << std::endl;
+    }
+
     return out;
   }
   

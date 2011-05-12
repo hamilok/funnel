@@ -81,7 +81,9 @@ void abonent_manager::dump(const std::string& filename)
   }
 
   for (std::size_t i = 0; i < items.size(); i++)
+  {
     file << items[i];
+  }
 
   file.close();
 }
